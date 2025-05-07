@@ -1,3 +1,4 @@
+"use client";
 import { Children } from "react";
 import Sidebar from "../app/admin/sidebar";
 type linkProps = {

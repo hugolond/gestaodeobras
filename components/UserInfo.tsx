@@ -1,3 +1,4 @@
+"use client";
 import React, { use } from "react";
 import Image from "next/image";
 import ReactLogo from "../app/assets/avatar4.svg";
