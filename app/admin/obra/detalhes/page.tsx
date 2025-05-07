@@ -1,5 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
+
 import logoOk from "../../../assets/ok.svg";
 import Image from "next/image";
 import { FormEvent, useState } from "react";
