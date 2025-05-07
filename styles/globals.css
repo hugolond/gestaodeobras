@@ -1,0 +1,192 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer components {
+  .all-\[unset\] {
+    all: unset;
+  }
+}
+
+@layer base {
+  html {
+    @apply text-neutral-800;
+  }
+  html.dark {
+    @apply text-neutral-50;
+    @apply bg-neutral-800;
+  }
+}
+:root {    
+  --grey-10: rgb(209, 206, 206);
+  --h4-14-20-font-family: "PingFangSC-Medium", Helvetica;
+  --h4-14-20-font-size: 14px;
+  --h4-14-20-font-style: normal;
+  --h4-14-20-font-weight: 500;
+  --h4-14-20-letter-spacing: 0px;
+  --h4-14-20-line-height: 20px;
+  --h5r-12-18-font-family: "PingFangSC-Regular", Helvetica;
+  --h5r-12-18-font-size: 12px;
+  --h5r-12-18-font-style: normal;
+  --h5r-12-18-font-weight: 400;
+  --h5r-12-18-letter-spacing: 0px;
+  --h5r-12-18-line-height: 18px;
+}
+
+
+@media screen and (min-width: 768px){
+  .effects{
+      flex: 2.8;
+      background: url('../public/tela1.png') no-repeat left center fixed;
+      background-size: cover;
+      height: 100vh;
+  }
+}
+
+.sidebar {
+/*  background-color: #CF6B13; */ 
+/* background-color: #d76b70; */
+background: rgba(255, 255, 255, 1);
+transition: width 1.4s;
+font-weight: 500;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+/*font-family: sans-serif;*/
+font-style: normal;
+@media (min-width: 640px) { 
+  background: rgba(255, 255, 255, 0.7);
+ }
+}
+
+.topcolor{
+background-color: #2b2b2b;
+opacity: 1;
+color: black;
+@media (min-width: 640px) { 
+  opacity: 80%;
+ }
+}
+
+.textDados{
+color: #c09645;
+font-weight: 450;
+}
+.login{
+  padding: 1%;
+  flex: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.login{
+padding: 1%;
+flex: 1;
+height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+}
+
+.body{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  /*background-color: #f3eeee; 
+  background-image: "fundo.png"; */
+}
+
+
+.itemSidebar:hover {
+  box-shadow: #fff;
+  color: bisque;
+  flex: auto;    
+}
+.admin{
+background-color: aqua;
+} 
+
+.buttomForm{
+display: flex; 
+justify-content: center; 
+align-items: center; 
+border-radius: 0.375rem; 
+border-width: 1px; 
+width: 100%; 
+height: 3rem; 
+font-size: 0.875rem;
+line-height: 1.25rem; 
+color: #ffffff; 
+background-color: #272625; 
+opacity: 1;
+transition-property: all;
+transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+transition-duration: 300ms;
+}
+.buttomForm:hover {
+ color: #ffffff; 
+background-color: #6B7280; 
+opacity: 1;
+}
+.titlePage{
+  display: flex; 
+justify-content: flex-start; 
+font-size: 1.25rem;
+line-height: 1.75rem; 
+font-weight: 700; 
+color: #22252c; 
+}
+
+.blockInput{
+display: flex; 
+padding-top: 2.5rem;
+padding-bottom: 2.5rem; 
+padding-left: 2.5rem;
+padding-right: 2.5rem; 
+margin-top: 1rem; 
+gap: 1.5rem;
+flex-direction: column; 
+grid-column: span 3 / span 3; 
+background-color: #F9FAFB; 
+border-radius: 8px;
+opacity: 90%;
+box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+}
+
+.blockCharts{
+  display: flex; 
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem; 
+  padding-left: 2.5rem;
+  padding-right: 2.5rem; 
+  margin-top: 1rem; 
+  gap: 1.5rem;
+  flex-direction: column; 
+  grid-column: span 3 / span 3; 
+  background-color: #F9FAFB; 
+  border-radius: 8px;
+  opacity: 100%;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+}
+
+@media (min-width: 640px) { 
+  padding-left: 2.5rem;
+  padding-right: 2.5rem; 
+  grid-column: span 4 / span 4; 
+ }
+
+
+.tAlert{
+  display: none; 
+  grid-column: span 3 / span 3; 
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  color: #2b2b2b;
+
+@media (min-width: 640px) { 
+  display: block; 
+  grid-column-end: 11; 
+ }
+}
