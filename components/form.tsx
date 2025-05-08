@@ -41,7 +41,7 @@ export default function Form({ type }: { type: "login" | "register" }) {
             }
           });
         } else {
-          fetchComToken("/api/auth/register", {
+          fetch("/api/auth/register", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

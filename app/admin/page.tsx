@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import DefautPage from "@/components/defautpage";
 import { getSession } from "next-auth/react";
+import { Loader2 } from "lucide-react";
 import {
   Chart as ChartJS,
   BarElement,
@@ -17,8 +18,6 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { Bar, Line } from "react-chartjs-2";
-import { Loader2 } from "lucide-react";
-import { fetchComToken } from "@/lib/fetchComToken";
 
 ChartJS.register(
   BarElement,
@@ -33,23 +32,22 @@ ChartJS.register(
   ChartDataLabels
 );
 
-type Obra = { ID: string; Nome: string };
-type Pagamento = {
+interface ObraPagamento {
   idobra: string;
+  nome: string;
   datapagamento: string;
   valor: number;
   categoria: string;
-};
+}
 
 const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 const getAno = (data: string) => new Date(data).getFullYear();
 const getMes = (data: string) => new Date(data).getMonth();
 
-const TelaDashboardPagamentos = () => {
-  const [obras, setObras] = useState<Obra[]>([]);
-  const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
-  const [anoSelecionado, setAnoSelecionado] = useState<number | null>(null);
+export default function DashboardUnificado() {
+  const [dados, setDados] = useState<ObraPagamento[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [anoSelecionado, setAnoSelecionado] = useState<number | null>(null);
   const [mostrarValores, setMostrarValores] = useState(false);
 
   const cores = [
@@ -58,71 +56,45 @@ const TelaDashboardPagamentos = () => {
   ];
 
   useEffect(() => {
-    const fetchObras = async () => {
+    const fetchDados = async () => {
       const session = await getSession();
       const token = session?.token;
 
-      const res = await fetchComToken("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+      const res = await fetch("https://backendgestaoobra.onrender.com/api/dashboard/obra-pagamento", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const data = await res.json();
-      if (Array.isArray(data)) setObras(data);
-    };
-
-    fetchObras();
-  }, []);
-
-  useEffect(() => {
-    const fetchPagamentos = async () => {
-      setCarregando(true);
-      const session = await getSession();
-      const token = session?.token;
-
-      const all: Pagamento[] = [];
-      for (const obra of obras) {
-        const res = await fetch(`https://backendgestaoobra.onrender.com/api/payment/v1/listpayment?idobra=${obra.ID}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data)) {
-          all.push(...data.map((p: Pagamento) => ({ ...p, idobra: obra.ID })));
-        }
+        setDados(data);
       }
-      setPagamentos(all);
       setCarregando(false);
     };
 
-    if (obras.length) fetchPagamentos();
-  }, [obras]);
+    fetchDados();
+  }, []);
 
   useEffect(() => {
-    const anos = pagamentos.map(p => getAno(p.datapagamento));
+    const anos = dados.map(p => getAno(p.datapagamento));
     if (anos.length) {
       const maisRecente = Math.max(...anos);
       setAnoSelecionado(maisRecente);
     }
-  }, [pagamentos]);
+  }, [dados]);
 
-  const anosDisponiveis = Array.from(new Set(pagamentos.map(p => getAno(p.datapagamento)))).sort((a, b) => b - a);
-  const dadosFiltrados = pagamentos.filter(p => getAno(p.datapagamento) === anoSelecionado);
+  const dadosFiltrados = dados.filter(p => getAno(p.datapagamento) === anoSelecionado);
+  const anosDisponiveis = Array.from(new Set(dados.map(p => getAno(p.datapagamento)))).sort((a, b) => b - a);
 
   const porObraMes: Record<string, number[]> = {};
   const porCategoriaMes: Record<string, number[]> = {};
   const porCategoriaTotal: Record<string, number> = {};
 
-  obras.forEach((obra) => {
-    porObraMes[obra.Nome] = Array(12).fill(0);
-  });
-
   dadosFiltrados.forEach(p => {
     const mes = getMes(p.datapagamento);
-    const obra = obras.find(o => o.ID === p.idobra)?.Nome;
-    if (obra) porObraMes[obra][mes] += p.valor;
+    porObraMes[p.nome] = porObraMes[p.nome] || Array(12).fill(0);
+    porObraMes[p.nome][mes] += p.valor;
 
     porCategoriaMes[p.categoria] = porCategoriaMes[p.categoria] || Array(12).fill(0);
     porCategoriaMes[p.categoria][mes] += p.valor;
@@ -148,17 +120,17 @@ const TelaDashboardPagamentos = () => {
 
   return (
     <DefautPage>
-      <section className="col-span-3 sm:col-span-8 px-2">
+      <section className="p-4 max-w-5xl mx-auto">
+        <h1 className="text-xl font-bold mb-6 text-gray-800">Dashboard Unificado de Pagamentos</h1>
+
         {carregando ? (
-          <div className="flex flex-col justify-center items-center py-20 text-gray-600">
-            <Loader2 className="animate-spin h-10 w-10 mb-4" />
-            Carregando dados do dashboard...
+          <div className="flex items-center justify-center text-gray-600">
+            <Loader2 className="animate-spin w-6 h-6 mr-2" />
+            Carregando dados...
           </div>
         ) : (
-          <div className="p-2 sm:p-4 max-w-full mx-auto space-y-10">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">Dashboard Financeiro de Obras</h1>
-
-            <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center justify-between">
+          <>
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <label className="text-sm font-medium text-gray-700">Ano:</label>
                 <select
@@ -202,11 +174,9 @@ const TelaDashboardPagamentos = () => {
                 </section>
               );
             })}
-          </div>
+          </>
         )}
       </section>
     </DefautPage>
   );
-};
-
-export default TelaDashboardPagamentos;
+}

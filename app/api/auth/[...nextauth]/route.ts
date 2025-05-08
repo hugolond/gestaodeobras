@@ -1,6 +1,5 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { fetchComToken } from "@/lib/fetchComToken";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,7 +14,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Email e senha são obrigatórios");
         }
 
-        const response = await fetchComToken("https://backendgestaoobra.onrender.com/login", {
+        const response = await fetch("https://backendgestaoobra.onrender.com/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
