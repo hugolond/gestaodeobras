@@ -18,6 +18,7 @@ import {
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { Bar, Line } from "react-chartjs-2";
 import { Loader2 } from "lucide-react";
+import { fetchComToken } from "@/lib/fetchComToken";
 
 ChartJS.register(
   BarElement,
@@ -61,7 +62,7 @@ const TelaDashboardPagamentos = () => {
       const session = await getSession();
       const token = session?.token;
 
-      const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+      const res = await fetchComToken("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

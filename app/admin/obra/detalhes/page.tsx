@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { Invoiced } from "./invoiced";
 import logoOk from "../../../assets/ok.svg";
 import { getSession } from "next-auth/react";
+import { fetchComToken } from "@/lib/fetchComToken";
 
 // Dynamic imports (SSR desabilitado)
 const TEInput = dynamicImport(() => import("tw-elements-react").then(m => m.TEInput), { ssr: false });
@@ -46,7 +47,7 @@ export default function PageConsultaStatus() {
         payload.status = false;
       }
 
-      const response = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/sendnewobra", {
+      const response = await fetchComToken("https://backendgestaoobra.onrender.com/api/obra/v1/sendnewobra", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

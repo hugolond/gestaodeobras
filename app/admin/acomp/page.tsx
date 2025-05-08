@@ -5,6 +5,7 @@ import DefautPage from "@/components/defautpage";
 import { Loader2 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { getSession } from "next-auth/react";
+import { fetchComToken } from "@/lib/fetchComToken";
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("pt-BR", {
@@ -64,7 +65,7 @@ const TelaAcompanhamentoPagamentos = () => {
           return;
         }
   
-        const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+        const res = await fetchComToken("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
           headers: {
             Authorization: `Bearer ${session.token}`,
           },
