@@ -81,7 +81,7 @@ export default function PageConsultaStatus() {
 
   return (
     <DefautPage>
-      <div className="col-span-3 sm:col-span-4">
+      <section className="col-span-3 sm:col-span-4">
         <label htmlFor="cadastroobra" className="titlePage">Cadastro Obra</label>
 
         <form ref={formRef} onSubmit={onSubmit} className="blockInput">
@@ -122,7 +122,7 @@ export default function PageConsultaStatus() {
             <Image className="w-[70px]" src={logoOk} alt="ok" />
           </div>
         )}
-      </div>
+      </section>
     </DefautPage>
   );
 }
