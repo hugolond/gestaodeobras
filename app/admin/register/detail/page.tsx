@@ -49,7 +49,7 @@ export default function CadastroPagamento() {
         const session = await getSession();
         const token = session?.token;
 
-        const res = await fetchComToken("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+        const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -96,7 +96,7 @@ export default function CadastroPagamento() {
       const session = await getSession();
       const token = session?.token;
 
-      const response = await fetchComToken("https://backendgestaoobra.onrender.com/api/payment/v1/sendnewpayment", {
+      const response = await fetch("https://backendgestaoobra.onrender.com/api/payment/v1/sendnewpayment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -12,6 +12,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/solid";
+import { fetchComToken } from "@/lib/fetchComToken";
 
 type Lote = {
   Sequence: number;
@@ -49,7 +50,7 @@ export default function TabelaLotes() {
         const session = await getSession();
         const token = session?.token || (session?.user as any)?.token;
 
-        const res = await fetchComToken("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+        const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

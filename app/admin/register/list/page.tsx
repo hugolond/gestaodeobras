@@ -43,7 +43,7 @@ export default function ListaPagamentosCompleta() {
     async function fetchObras() {
       const session = await getSession();
       const token = session?.token;
-      const res = await fetchComToken("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+      const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -61,7 +61,7 @@ export default function ListaPagamentosCompleta() {
       (async () => {
         const session = await getSession();
         const token = session?.token;
-        const res = await fetchComToken(`https://backendgestaoobra.onrender.com/api/payment/v1/listpayment?idobra=${obraSelecionada}`, {
+        const res = await fetch(`https://backendgestaoobra.onrender.com/api/payment/v1/listpayment?idobra=${obraSelecionada}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -90,7 +90,7 @@ export default function ListaPagamentosCompleta() {
     const session = await getSession();
     const token = session?.token;
 
-    const res = await fetchComToken("https://backendgestaoobra.onrender.com/api/payment/v1/update", {
+    const res = await fetch("https://backendgestaoobra.onrender.com/api/payment/v1/update", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -114,7 +114,7 @@ export default function ListaPagamentosCompleta() {
     const session = await getSession();
     const token = session?.token;
 
-    const res = await fetchComToken(`https://backendgestaoobra.onrender.com/api/payment/v1/delete?id=${id}`, {
+    const res = await fetch(`https://backendgestaoobra.onrender.com/api/payment/v1/delete?id=${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

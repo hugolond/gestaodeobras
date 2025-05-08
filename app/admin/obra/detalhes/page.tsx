@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import dynamicImport from "next/dynamic";
 import DefautPage from "@/components/defautpage";
 import toast from "react-hot-toast";
@@ -21,8 +21,9 @@ export default function PageConsultaStatus() {
   const [playload, setPlayload] = useState<Invoiced | null>(null);
   const [selectValue, setSelectValue] = useState(1);
   const [obraConcluida, setObraConcluida] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: FormEvent) {
     event.preventDefault();
     setIsLoading(true);
     setPlayload(null);
@@ -30,14 +31,16 @@ export default function PageConsultaStatus() {
       const session = await getSession();
       const token = session?.token;
 
-      const formData = new FormData(event.currentTarget);
+      if (!formRef.current) throw new Error("Formulário não encontrado");
+      const formData = new FormData(formRef.current);
+
       const payload: any = {
         nome: formData.get("nomeObra"),
         endereco: formData.get("endereco"),
         bairro: formData.get("bairro"),
         area: formData.get("area"),
         tipo: selectValue,
-        casagerminada: (event.currentTarget.elements.namedItem("flexSwitchCasaGeminada") as HTMLInputElement).checked,
+        casagerminada: (formRef.current.elements.namedItem("flexSwitchCasaGeminada") as HTMLInputElement).checked,
         status: true,
         datainicioobra: formData.get("datainicioobra"),
         datafinalobra: formData.get("datainicioobra"),
@@ -47,7 +50,7 @@ export default function PageConsultaStatus() {
         payload.status = false;
       }
 
-      const response = await fetchComToken("https://backendgestaoobra.onrender.com/api/obra/v1/sendnewobra", {
+      const response = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/sendnewobra", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +84,7 @@ export default function PageConsultaStatus() {
       <div className="col-span-3 sm:col-span-4">
         <label htmlFor="cadastroobra" className="titlePage">Cadastro Obra</label>
 
-        <form onSubmit={onSubmit} className="blockInput">
+        <form ref={formRef} onSubmit={onSubmit} className="blockInput">
           <TEInput required type="text" id="nomeObra" name="nomeObra" label="Obra" />
           <TEInput required type="text" id="endereco" name="endereco" label="Endereço" />
           <TEInput required type="text" id="bairro" name="bairro" label="Bairro" />

@@ -18,6 +18,7 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { Bar, Line } from "react-chartjs-2";
+import { fetchComToken } from "@/lib/fetchComToken";
 
 ChartJS.register(
   BarElement,
@@ -58,7 +59,7 @@ export default function DashboardUnificado() {
   useEffect(() => {
     const fetchDados = async () => {
       const session = await getSession();
-      const token = session?.token;
+      const token = session?.token || (session?.user as any)?.token;
 
       const res = await fetch("https://backendgestaoobra.onrender.com/api/dashboard/obra-pagamento", {
         headers: {
@@ -120,7 +121,7 @@ export default function DashboardUnificado() {
 
   return (
     <DefautPage>
-      <section className="p-4 max-w-5xl mx-auto">
+      <section className="col-span-3 sm:col-span-10">
         <h1 className="text-xl font-bold mb-6 text-gray-800">Dashboard Unificado de Pagamentos</h1>
 
         {carregando ? (
