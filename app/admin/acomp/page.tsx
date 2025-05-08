@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import DefautPage from "@/components/defautpage";
 import { Loader2 } from "lucide-react";
 import html2canvas from "html2canvas";
+import { getSession } from "next-auth/react";
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("pt-BR", {
@@ -55,28 +56,52 @@ const TelaAcompanhamentoPagamentos = () => {
   };
 
   useEffect(() => {
-    fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra")
-      .then(res => res.json())
-      .then(data => {
+    async function fetchObras() {
+      try {
+        const session = await getSession();
+        if (!session?.token) {
+          window.location.href = "/login"; // ou usar router.push se estiver usando `next/navigation`
+          return;
+        }
+  
+        const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+          headers: {
+            Authorization: `Bearer ${session.token}`,
+          },
+        });
+  
+        if (!res.ok) throw new Error("Falha ao carregar obras");
+        const data = await res.json();
         setObras(data);
         if (data.length) setObraSelecionada(data[0].ID);
-      });
+      } catch (error) {
+        console.error("Erro ao buscar obras:", error);
+        window.location.href = "/login";
+      }
+    }
+    fetchObras();
   }, []);
-
+  
   useEffect(() => {
     if (!obraSelecionada) return;
     setCarregando(true);
-    fetch(`https://backendgestaoobra.onrender.com/api/payment/v1/listpayment?idobra=${obraSelecionada}`)
-      .then(res => res.json())
-      .then((data: Pagamento[]) => {
-        setPagamentos(data);
-        const agrupamento: Record<string, number> = {};
-        data.forEach(p => {
-          agrupamento[p.categoria] = (agrupamento[p.categoria] || 0) + p.valor;
-        });
-        setAgrupados(agrupamento);
-      })
-      .finally(() => setCarregando(false));
+    (async () => {
+      const session = await getSession();
+      const token = session?.token;
+      const res = await fetch(`https://backendgestaoobra.onrender.com/api/payment/v1/listpayment?idobra=${obraSelecionada}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data: Pagamento[] = await res.json();
+      setPagamentos(data);
+      const agrupamento: Record<string, number> = {};
+      data.forEach(p => {
+        agrupamento[p.categoria] = (agrupamento[p.categoria] || 0) + p.valor;
+      });
+      setAgrupados(agrupamento);
+      setCarregando(false);
+    })();
   }, [obraSelecionada]);
 
   const totalGeral = Object.values(agrupados).reduce((acc, val) => acc + val, 0);

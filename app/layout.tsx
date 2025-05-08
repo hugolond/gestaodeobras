@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 import AuthStatus from "../components/auth-status";
 import AuthDados from "../components/auth-dados";
-import { Suspense, useEffect } from "react";
+import { Suspense} from "react";
 import { Open_Sans } from "next/font/google";
 import type { Viewport } from 'next'
 import Sidebar from "./admin/sidebar";

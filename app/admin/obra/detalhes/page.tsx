@@ -7,6 +7,7 @@ import DefautPage from "@/components/defautpage";
 import toast from "react-hot-toast";
 import { Invoiced } from "./invoiced";
 import logoOk from "../../../assets/ok.svg";
+import { getSession } from "next-auth/react";
 
 // Dynamic imports (SSR desabilitado)
 const TEInput = dynamicImport(() => import("tw-elements-react").then(m => m.TEInput), { ssr: false });
@@ -25,6 +26,9 @@ export default function PageConsultaStatus() {
     setIsLoading(true);
     setPlayload(null);
     try {
+      const session = await getSession();
+      const token = session?.token;
+
       const formData = new FormData(event.currentTarget);
       const payload: any = {
         nome: formData.get("nomeObra"),
@@ -44,7 +48,10 @@ export default function PageConsultaStatus() {
 
       const response = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/sendnewobra", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
 

@@ -2,6 +2,7 @@
 import React, { useEffect, useState, FormEvent } from "react";
 import DefautPage from "@/components/defautpage";
 import toast from "react-hot-toast";
+import { getSession } from "next-auth/react";
 
 type Obra = {
   ID: string;
@@ -45,7 +46,14 @@ export default function CadastroPagamento() {
   useEffect(() => {
     async function fetchObras() {
       try {
-        const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra");
+        const session = await getSession();
+        const token = session?.token;
+
+        const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!res.ok) throw new Error("Erro ao carregar obras.");
         const data = await res.json();
         setObras(data);
@@ -85,9 +93,15 @@ export default function CadastroPagamento() {
     };
 
     try {
+      const session = await getSession();
+      const token = session?.token;
+
       const response = await fetch("https://backendgestaoobra.onrender.com/api/payment/v1/sendnewpayment", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
 
@@ -116,7 +130,6 @@ export default function CadastroPagamento() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded shadow">
-          {/* Seleção da Obra */}
           <div>
             <label htmlFor="obra" className="block mb-1 text-sm font-medium text-gray-700">Obra</label>
             <select
@@ -132,7 +145,6 @@ export default function CadastroPagamento() {
             </select>
           </div>
 
-          {/* Data do Pagamento */}
           <div>
             <label htmlFor="data_pagamento" className="block mb-1 text-sm font-medium text-gray-700">Data do Pagamento</label>
             <input
@@ -145,7 +157,6 @@ export default function CadastroPagamento() {
             />
           </div>
 
-          {/* Categoria */}
           <div>
             <label htmlFor="categoria" className="block mb-1 text-sm font-medium text-gray-700">Categoria</label>
             <select
@@ -162,7 +173,6 @@ export default function CadastroPagamento() {
             </select>
           </div>
 
-          {/* Tipo de Material */}
           {categoria === "Material" && (
             <div>
               <label htmlFor="tipo_material" className="block mb-1 text-sm font-medium text-gray-700">
@@ -183,7 +193,6 @@ export default function CadastroPagamento() {
             </div>
           )}
 
-          {/* Valor com R$ */}
           <div>
             <label htmlFor="valor" className="block mb-1 text-sm font-medium text-gray-700">Valor</label>
             <div className="relative">
@@ -199,7 +208,6 @@ export default function CadastroPagamento() {
             </div>
           </div>
 
-          {/* Detalhe */}
           <div>
             <label htmlFor="detalhe" className="block mb-1 text-sm font-medium text-gray-700">Detalhe</label>
             <input
@@ -212,7 +220,6 @@ export default function CadastroPagamento() {
             />
           </div>
 
-          {/* Observação */}
           <div>
             <label htmlFor="observacao" className="block mb-1 text-sm font-medium text-gray-700">Observação (opcional)</label>
             <textarea
@@ -224,7 +231,6 @@ export default function CadastroPagamento() {
             />
           </div>
 
-          {/* Botão */}
           <button
             type="submit"
             disabled={isLoading}

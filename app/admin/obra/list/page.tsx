@@ -1,5 +1,7 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
+import { getSession } from "next-auth/react";
 import DefautPage from "@/components/defautpage";
 import {
   CheckCircleIcon,
@@ -23,18 +25,9 @@ type Lote = {
 };
 
 const tiposObra: Record<number, { text: string; icon: JSX.Element }> = {
-  1: {
-    text: "Térrea",
-    icon: <HomeIcon className="w-5 h-5 mr-1 text-gray-500" />,
-  },
-  2: {
-    text: "2 Andares",
-    icon: <BuildingLibraryIcon className="w-5 h-5 mr-1 text-gray-500" />,
-  },
-  3: {
-    text: "3 Andares",
-    icon: <BuildingOfficeIcon className="w-5 h-5 mr-1 text-gray-500" />,
-  },
+  1: { text: "Térrea", icon: <HomeIcon className="w-5 h-5 mr-1 text-gray-500" /> },
+  2: { text: "2 Andares", icon: <BuildingLibraryIcon className="w-5 h-5 mr-1 text-gray-500" /> },
+  3: { text: "3 Andares", icon: <BuildingOfficeIcon className="w-5 h-5 mr-1 text-gray-500" /> },
 };
 
 export default function TabelaLotes() {
@@ -45,7 +38,6 @@ export default function TabelaLotes() {
 
   const itensPorPagina = 10;
   const totalPaginas = Math.ceil(lotes.length / itensPorPagina);
-
   const lotesPaginados = lotes.slice(
     (paginaAtual - 1) * itensPorPagina,
     paginaAtual * itensPorPagina
@@ -54,7 +46,15 @@ export default function TabelaLotes() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra");
+        const session = await getSession();
+        const token = session?.token || (session?.user as any)?.token;
+
+        const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (!res.ok) throw new Error("Erro ao buscar os dados.");
         const data = await res.json();
         if (!Array.isArray(data)) throw new Error("Formato inesperado da resposta.");
@@ -140,7 +140,6 @@ export default function TabelaLotes() {
               </table>
             </div>
 
-            {/* Paginação com ícones */}
             <div className="flex justify-center items-center gap-2 mt-6">
               <button
                 onClick={() => setPaginaAtual((prev) => Math.max(prev - 1, 1))}

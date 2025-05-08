@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import DefautPage from "@/components/defautpage";
 import toast from "react-hot-toast";
+import { getSession } from "next-auth/react";
 
 const categorias = [
   "Custo Terreno", "Taxa Prefeitura", "Mão Obra",
@@ -38,21 +39,36 @@ export default function ListaPagamentosCompleta() {
   const itensPorPagina = 10;
 
   useEffect(() => {
-    fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra")
-      .then(res => res.json())
-      .then(data => {
-        setObras(data);
-        setObraSelecionada(data[0]?.ID || "");
+    async function fetchObras() {
+      const session = await getSession();
+      const token = session?.token;
+      const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+      const data = await res.json();
+      setObras(data);
+      setObraSelecionada(data[0]?.ID || "");
+    }
+    fetchObras();
   }, []);
 
   useEffect(() => {
     if (obraSelecionada) {
       setCarregandoObra(true);
-      fetch(`https://backendgestaoobra.onrender.com/api/payment/v1/listpayment?idobra=${obraSelecionada}`)
-        .then(res => res.json())
-        .then(data => Array.isArray(data) ? setPagamentos(data) : setPagamentos([]))
-        .finally(() => setCarregandoObra(false));
+      (async () => {
+        const session = await getSession();
+        const token = session?.token;
+        const res = await fetch(`https://backendgestaoobra.onrender.com/api/payment/v1/listpayment?idobra=${obraSelecionada}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setPagamentos(Array.isArray(data) ? data : []);
+        setCarregandoObra(false);
+      })();
     }
   }, [obraSelecionada]);
 
@@ -70,10 +86,15 @@ export default function ListaPagamentosCompleta() {
     const original = pagamentos.find(p => p.id === editing);
     if (!original) return;
     const atualizado = { ...original, ...editValues };
+    const session = await getSession();
+    const token = session?.token;
 
     const res = await fetch("https://backendgestaoobra.onrender.com/api/payment/v1/update", {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(atualizado)
     });
 
@@ -89,7 +110,16 @@ export default function ListaPagamentosCompleta() {
 
   const handleExcluir = async (id: number) => {
     if (!confirm("Deseja excluir este pagamento?")) return;
-    const res = await fetch(`https://backendgestaoobra.onrender.com/api/payment/v1/delete?id=${id}`, { method: "DELETE" });
+    const session = await getSession();
+    const token = session?.token;
+
+    const res = await fetch(`https://backendgestaoobra.onrender.com/api/payment/v1/delete?id=${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     if (res.ok) {
       toast.success("Excluído com sucesso");
       setPagamentos(pagamentos.filter(p => p.id !== id));
