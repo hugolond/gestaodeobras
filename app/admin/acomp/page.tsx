@@ -89,8 +89,10 @@ const TelaAcompanhamentoPagamentos = () => {
 
   return (
     <DefautPage>
-      <section className="col-span-3 sm:col-span-8">
-        <h1 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">Acompanhamento Pagamentos</h1>
+      <div className="p-4 max-w-4xl mx-auto">
+        <h1 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">
+          Acompanhamento de Pagamentos por Categoria
+        </h1>
 
         <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center mb-6">
           <div className="flex flex-col w-full sm:w-auto">
@@ -131,23 +133,34 @@ const TelaAcompanhamentoPagamentos = () => {
             <Loader2 className="animate-spin mr-2" /> Carregando pagamentos...
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow p-4 sm:p-6 w-full min-w-[300px] sm:min-w-[768px] overflow-auto" ref={componenteRef}>
+          <div
+            ref={componenteRef}
+            className="bg-white rounded-xl shadow p-4 sm:p-6 w-full min-w-[300px] sm:min-w-[768px] overflow-visible"
+            style={{
+              width: "100%",
+              maxWidth: "768px",
+              paddingBottom: "2rem",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
             <div className="text-center text-sm text-gray-500 mb-4">
               Obra: <strong>{nomeObraSelecionada}</strong> — Data: <strong>{dataAtual}</strong>
             </div>
+
             <ul className="divide-y divide-gray-200 text-xs sm:text-sm">
               <li className="py-2 px-1 sm:px-2 flex justify-between font-semibold text-gray-700">
                 <span>Categoria</span>
                 <span className="text-right">Valor / %</span>
               </li>
+
               {agrupadosOrdenados.map(([categoria, total]) => {
                 const percentual = totalGeral > 0 ? (total / totalGeral) * 100 : 0;
                 return (
                   <li
                     key={categoria}
-                    className="py-3 px-1 sm:px-2 flex justify-between items-center"
+                    className="py-3 px-1 sm:px-2 flex justify-between items-center leading-snug min-h-[36px]"
                   >
-                    <span className="text-gray-700 font-medium w-1/2 truncate">{categoria}</span>
+                    <span className="text-gray-700 font-medium w-1/2">{categoria}</span>
                     <div className="text-right w-1/2">
                       <div className="text-green-700 font-semibold">
                         {total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
@@ -158,6 +171,7 @@ const TelaAcompanhamentoPagamentos = () => {
                 );
               })}
             </ul>
+
             <div className="pt-4 mt-4 border-t text-right text-gray-800 text-sm sm:text-base">
               <div className="font-bold text-base sm:text-lg">
                 Total Geral: {totalGeral.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
@@ -170,7 +184,7 @@ const TelaAcompanhamentoPagamentos = () => {
             </div>
           </div>
         )}
-      </section>
+      </div>
     </DefautPage>
   );
 };

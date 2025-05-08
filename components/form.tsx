@@ -50,8 +50,8 @@ export default function Form({ type }: { type: "login" | "register" }) {
               username: e.currentTarget.username.value,
               email: e.currentTarget.email.value,
               password: e.currentTarget.password.value,
-              departament : e.currentTarget.departament.value,
-              emailmanager : e.currentTarget.emailmanager.value
+              departament : "NA",
+              emailmanager : "NA"
             }),
           }).then(async (res) => {
             setLoading(false);
@@ -101,29 +101,7 @@ export default function Form({ type }: { type: "login" | "register" }) {
         />
       </div>
       {type === "register" ? (
-        <><div>
-          <label
-            htmlFor="departament"
-            className="block text-gray-600 text-sm">
-            Setor
-          </label>
-          <select id = "departament" defaultValue= {selectedOptionId} className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm">
-            {option_id.map(id =>
-            <option className="text-gray-600" key={id} value={options[id].name}>{options[id].name}</option>
-            )}
-          </select>
-        </div>
-        <div>
-            
-            <TEInput
-              id="emailmanager"
-              name="emailmanager"
-              type="email"
-              label="E-mail Gestor"
-              autoComplete="emailmanager"
-              required
-              className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm" />
-        </div></>
+        <></>
       ):(<div></div>)}
       <button
         disabled={loading}
