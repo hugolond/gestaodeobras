@@ -11,7 +11,7 @@ const categorias = [
   "Material - Cal/Cimento", "Material - Tijolo", "Material - Concreto",
   "Material - Areia/Pedra", "Material - Outros", "Energia e Água",
   "Material - Encanamento", "Material - Elétrico", "Premios",
-  "Material - Cobertura", "Material - Piso", "Material - Gesso", "Material - Granito"
+  "Material - Cobertura", "Material - Piso", "Material - Gesso", "Material - Granito" , "Material - Tinta"
 ];
 
 type Obra = {
