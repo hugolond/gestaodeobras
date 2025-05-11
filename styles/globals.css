@@ -59,16 +59,16 @@ font-style: normal;
 }
 
 .topcolor{
-background-color: #2b2b2b;
+background-color: #fcfcfc;
 opacity: 1;
-color: black;
+color: rgb(255, 255, 255);
 @media (min-width: 640px) { 
   opacity: 80%;
  }
 }
 
 .textDados{
-color: #c09645;
+color: #ffffff;
 font-weight: 450;
 }
 .login{

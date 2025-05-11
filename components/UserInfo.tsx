@@ -18,7 +18,7 @@ export default function UserInfo({user}: UserInfoProps){
     return (
         <div className="topcolor flex bottom-0 left-0 z-20 p-2 rounded-[0px_0px_16px_16px]">
             <Image className="w-[65px] px-1.5" priority src={ReactLogo} alt="Login" />
-            <div className="flex items-center justify-center border-x-[#c09645] border-x-2">
+            <div className="flex items-center justify-center border-x-[#ffffff] border-x-2">
             </div>
             <div className="flex-wrap max-w-[10rem] px-2">
               <div className="textDados font-extrabold flex-item leading-[var(--h4-14-20-line-height)] [font-style:var(--h4-14-20-font-style)]">

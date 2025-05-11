@@ -20,7 +20,6 @@ export default function PageConsultaStatus() {
   const [isLoading, setIsLoading] = useState(false);
   const [playload, setPlayload] = useState<Invoiced | null>(null);
   const [selectValue, setSelectValue] = useState(1);
-  const [obraConcluida, setObraConcluida] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   async function onSubmit(event: FormEvent) {
@@ -43,12 +42,8 @@ export default function PageConsultaStatus() {
         casagerminada: (formRef.current.elements.namedItem("flexSwitchCasaGeminada") as HTMLInputElement).checked,
         status: true,
         datainicioobra: formData.get("datainicioobra"),
-        datafinalobra: formData.get("datainicioobra"),
+        datafinalobra: formData.get("datafinalobra"),
       };
-      if (obraConcluida) {
-        payload.datafinalobra = formData.get("datafinalobra");
-        payload.status = false;
-      }
 
       const response = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/sendnewobra", {
         method: "POST",
@@ -82,10 +77,11 @@ export default function PageConsultaStatus() {
   return (
     <DefautPage>
       <section className="col-span-3 sm:col-span-4">
-        <label htmlFor="cadastroobra" className="titlePage">Cadastro Obra</label>
-
+      <h1 className="text-3xl sm:text-2xl font-bold mb-6 text-gray-800">
+          Cadastro da Obra
+        </h1>
         <form ref={formRef} onSubmit={onSubmit} className="blockInput">
-          <TEInput required type="text" id="nomeObra" name="nomeObra" label="Obra" />
+          <TEInput required type="text" id="nomeObra" name="nomeObra" label="Descritivo" />
           <TEInput required type="text" id="endereco" name="endereco" label="Endereço" />
           <TEInput required type="text" id="bairro" name="bairro" label="Bairro" />
           <TEInput required type="text" id="area" name="area" label="Área da Obra (m²)" />
@@ -95,26 +91,18 @@ export default function PageConsultaStatus() {
             <input type="checkbox" id="flexSwitchCasaGeminada" role="switch" />
             <label htmlFor="flexSwitchCasaGeminada" className="ml-2">Casa Geminada</label>
           </div>
-
-          <TEInput required type="date" id="datainicioobra" name="datainicioobra" label="Data de Início da Obra" />
-
-          <div className="my-2">
-            <input type="checkbox" id="obraConcluida" checked={obraConcluida} onChange={() => setObraConcluida(!obraConcluida)} />
-            <label htmlFor="obraConcluida" className="ml-2">Obra concluída</label>
-          </div>
-
-          {obraConcluida && (
-            <TEInput required type="date" id="datafinalobra" name="datafinalobra" label="Data Final da Obra" />
-          )}
-
+          <label>
+            Data Início Obra
+          <TEInput required type="date" id="datainicioobra" name="datainicioobra" label="" />
+          </label>
+          <label>
+            Data Prevista Término
+            <TEInput required type="date" id="datafinalobra" name="datafinalobra" label="" />
+          </label>
           <button type="submit" disabled={isLoading} className="buttomForm">
             {isLoading ? "Enviando..." : "Registrar"}
           </button>
         </form>
-
-        <TEAlert staticAlert open className="tAlert">
-          Informar os dados da obra para o cadastro.
-        </TEAlert>
 
         {playload && (
           <div className="flex items-center justify-between shadow-lg bg-gray-50 px-10 py-10 mt-6">

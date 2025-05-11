@@ -115,7 +115,7 @@ const TelaAcompanhamentoPagamentos = () => {
   return (
     <DefautPage>
       <section className="col-span-3 sm:col-span-8">
-        <h1 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">
+        <h1 className="text-3xl sm:text-2xl font-bold mb-6 text-gray-800">
           Acompanhamento de Pagamentos por Categoria
         </h1>
 

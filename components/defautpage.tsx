@@ -8,7 +8,7 @@ type linkProps = {
 export default function DefautPage(props: linkProps) {
   return (
     <div className="grid grid-cols-1 gap-4">
-      <div className="grid grid-cols-3 sm:grid-cols-8 gap-4 px-5 pt-4 sm:ml-80 max-w-screen-lg">
+      <div className="grid grid-cols-3 sm:grid-cols-8 gap-4 px-4 pt-16 sm:ml-80 max-w-screen-lg">
         <Sidebar /> 
             {props.children}
       </div>
