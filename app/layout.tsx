@@ -24,7 +24,7 @@ const styling = {
 
 const roboto = Open_Sans({ weight: "400", subsets: ["latin"] });
 
-const title = "Pagina de Gestão - Microserviços ";
+const title = "Gestão de Obra 2.0";
 const description =
   "Gerenciamento de serviços";
 

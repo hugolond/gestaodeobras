@@ -59,7 +59,7 @@ export default function Sidebar() {
         </div>
 
         <div className="px-3 py-4 overflow-y-auto">
-          <Link href="/admin/home">
+          <Link href="/admin">
             <button type="button" className={sidebarButton}>
             <DevicePhoneMobileIcon className= {estiloicon} />
               <span className={sidebarSpan}>Home</span>

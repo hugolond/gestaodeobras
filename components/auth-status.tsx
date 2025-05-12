@@ -9,7 +9,7 @@ import { json } from "stream/consumers";
 // eslint-disable-next-line @next/next/no-async-client-component
 export default async function AuthStatus() {
   const session = await getServerSession(authOptions);
-  const textLogin =  `Logado com ${session?.user?.username} - ${session?.user?.email}`;
+  const textLogin =  `${session?.user?.username} - ${session?.user?.email}`;
   // console.log(userId)  
   return (    
     <div className="sm:hidden w-full flex justify-end px-5 pt-2">

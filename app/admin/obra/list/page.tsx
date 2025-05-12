@@ -2,20 +2,23 @@
 
 import React, { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import DefautPage from "@/components/defautpage";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 import {
-  CheckCircleIcon,
-  XCircleIcon,
   HomeIcon,
   BuildingLibraryIcon,
   BuildingOfficeIcon,
+  CheckCircleIcon,
+  XCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/solid";
-import { fetchComToken } from "@/lib/fetchComToken";
+
 
 type Lote = {
-  Sequence: number;
+  ID: string;
   Nome: string;
   Endereco: string;
   Bairro: string;
@@ -37,7 +40,8 @@ export default function TabelaLotes() {
   const [erro, setErro] = useState<string | null>(null);
   const [paginaAtual, setPaginaAtual] = useState(1);
 
-  const itensPorPagina = 10;
+  const router = useRouter();
+  const itensPorPagina = 9;
   const totalPaginas = Math.ceil(lotes.length / itensPorPagina);
   const lotesPaginados = lotes.slice(
     (paginaAtual - 1) * itensPorPagina,
@@ -58,8 +62,14 @@ export default function TabelaLotes() {
 
         if (!res.ok) throw new Error("Erro ao buscar os dados.");
         const data = await res.json();
-        if (!Array.isArray(data)) throw new Error("Formato inesperado da resposta.");
-        setLotes(data);
+        if (data === null) {
+          setLotes([]);
+          setErro("Por favor, cadastre um nova obra para listar");
+        } else if (!Array.isArray(data)) {
+          throw new Error("Formato inesperado da resposta.");
+        } else {
+          setLotes(data);
+        }
       } catch (err: any) {
         setErro(err.message || "Erro desconhecido.");
       } finally {
@@ -89,63 +99,44 @@ export default function TabelaLotes() {
 
         {!carregando && !erro && lotes.length > 0 && (
           <>
-            <div className="overflow-x-auto border rounded-lg shadow-sm">
-              <table className="min-w-full text-sm text-left text-gray-700 bg-white">
-                <thead className="bg-gray-100 text-xs text-gray-600">
-                  <tr>
-                    <th className="px-4 py-3">Nome</th>
-                    <th className="px-6 py-3">Endereço</th>
-                    <th className="px-6 py-3">Bairro</th>
-                    <th className="px-4 py-3 text-center">Área (m²)</th>
-                    <th className="px-4 py-3 text-center">Tipo</th>
-                    <th className="px-4 py-3 text-center">Geminada</th>
-                    <th className="px-4 py-3 text-center">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lotesPaginados.map((lote) => (
-                    <tr key={lote.Sequence} className="border-t hover:bg-gray-50 transition">
-                      <td className="px-4 py-3">{lote.Nome}</td>
-                      <td className="px-6 py-3">{lote.Endereco}</td>
-                      <td className="px-6 py-3">{lote.Bairro}</td>
-                      <td className="px-4 py-3 text-center">{lote.Area}</td>
-                      <td className="px-4 py-3 text-center">
-                        <div className="inline-flex items-center justify-center gap-1">
-                          {tiposObra[parseInt(lote.Tipo)]?.icon}
-                          <span className="whitespace-nowrap text-sm font-medium text-gray-700">
-                            {tiposObra[parseInt(lote.Tipo)]?.text || "Desconhecido"}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        {lote.Casagerminada ? (
-                          <CheckCircleIcon className="w-5 h-5 text-green-600 mx-auto" />
-                        ) : (
-                          <XCircleIcon className="w-5 h-5 text-red-500 mx-auto" />
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span
-                          className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
-                            lote.Status
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {lote.Status ? "Em Andamento" : "Concluída"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 rounded-lg p-4 shadow bg-white shadow-md">
+              {lotesPaginados.map((lote) => (
+                <div
+                  key={lote.ID}
+                  onClick={() => router.push(`/admin/acomp?id=${lote.ID}`)}
+                  className="cursor-pointer border rounded-lg p-4 shadow hover:shadow-md transition hover:bg-blue-50"
+                >
+                  <h2 className="text-lg font-bold text-gray-800 mb-1">{lote.Nome}</h2>
+                  <p className="text-sm text-gray-600"><strong>Endereço:</strong> {lote.Endereco}</p>
+                  <p className="text-sm text-gray-600"><strong>Bairro:</strong> {lote.Bairro}</p>
+                  <p className="text-sm text-gray-600"><strong>Área:</strong> {lote.Area} m²</p>
+                  <div className="mt-2 flex items-center gap-2">
+                    {tiposObra[parseInt(lote.Tipo)]?.icon}
+                    <span className="text-sm">{tiposObra[parseInt(lote.Tipo)]?.text || "Tipo desconhecido"}</span>
+                  </div>
+                  <div className="mt-2">
+                    <span
+                      className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
+                        lote.Status
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {lote.Status ? "Em Andamento" : "Concluída"}
+                    </span>
+                    {lote.Casagerminada && (
+                      <span className="ml-2 text-xs text-blue-600 font-medium">(Geminada)</span>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div className="flex justify-center items-center gap-2 mt-6">
               <button
                 onClick={() => setPaginaAtual((prev) => Math.max(prev - 1, 1))}
                 disabled={paginaAtual === 1}
-                className="flex items-center gap-1 px-3 py-1 rounded-full border text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition"
+                className="flex items-center gap-1 px-3 py-1 rounded-full border text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition bg-white"
               >
                 <ChevronLeftIcon className="w-4 h-4" />
                 <span className="text-sm">Anterior</span>
@@ -172,7 +163,7 @@ export default function TabelaLotes() {
               <button
                 onClick={() => setPaginaAtual((prev) => Math.min(prev + 1, totalPaginas))}
                 disabled={paginaAtual === totalPaginas}
-                className="flex items-center gap-1 px-3 py-1 rounded-full border text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition"
+                className="flex items-center gap-1 px-3 py-1 rounded-full border text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition bg-white"
               >
                 <span className="text-sm">Próximo</span>
                 <ChevronRightIcon className="w-4 h-4" />
@@ -181,6 +172,16 @@ export default function TabelaLotes() {
           </>
         )}
       </section>
+
+      {/* Botão flutuante para nova obra */}
+      <Link
+        href="/admin/obra/detalhes"
+        className="fixed bottom-6 right-6 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"
+        aria-label="Adicionar pagamento"
+      >
+        <Plus className="w-5 h-5" />
+        <span className="text-sm font-medium">Nova Obra</span>
+      </Link>
     </DefautPage>
   );
 }

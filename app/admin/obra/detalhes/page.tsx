@@ -8,7 +8,6 @@ import toast from "react-hot-toast";
 import { Invoiced } from "./invoiced";
 import logoOk from "../../../assets/ok.svg";
 import { getSession } from "next-auth/react";
-import { fetchComToken } from "@/lib/fetchComToken";
 
 // Dynamic imports (SSR desabilitado)
 const TEInput = dynamicImport(() => import("tw-elements-react").then(m => m.TEInput), { ssr: false });
@@ -32,6 +31,14 @@ export default function PageConsultaStatus() {
 
       if (!formRef.current) throw new Error("Formulário não encontrado");
       const formData = new FormData(formRef.current);
+      
+      const valorInput = String(formData.get("previsto")).replace(",", ".");
+      const valor = parseFloat(valorInput);
+      if (isNaN(valor)) {
+        toast.error("Valor inválido.");
+        setIsLoading(false);
+        return;
+      }
 
       const payload: any = {
         nome: formData.get("nomeObra"),
@@ -39,6 +46,7 @@ export default function PageConsultaStatus() {
         bairro: formData.get("bairro"),
         area: formData.get("area"),
         tipo: selectValue,
+        previsto: valor,
         casagerminada: (formRef.current.elements.namedItem("flexSwitchCasaGeminada") as HTMLInputElement).checked,
         status: true,
         datainicioobra: formData.get("datainicioobra"),
@@ -85,6 +93,7 @@ export default function PageConsultaStatus() {
           <TEInput required type="text" id="endereco" name="endereco" label="Endereço" />
           <TEInput required type="text" id="bairro" name="bairro" label="Bairro" />
           <TEInput required type="text" id="area" name="area" label="Área da Obra (m²)" />
+          <TEInput required type="text" id="previsto" name="previsto" label="Valor previsto (R$)" placeholder="Ex: 1500,00"/>
           <TESelect data={tipoOptions} value={selectValue} onValueChange={(e: any) => setSelectValue(e.value)} />
 
           <div className="my-2">
@@ -96,7 +105,7 @@ export default function PageConsultaStatus() {
           <TEInput required type="date" id="datainicioobra" name="datainicioobra" label="" />
           </label>
           <label>
-            Data Prevista Término
+            Data Previsão Término
             <TEInput required type="date" id="datafinalobra" name="datafinalobra" label="" />
           </label>
           <button type="submit" disabled={isLoading} className="buttomForm">

@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState, FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import DefautPage from "@/components/defautpage";
 import toast from "react-hot-toast";
 import { getSession } from "next-auth/react";
@@ -9,70 +10,79 @@ type Obra = {
   Nome: string;
 };
 
+type Categoria = {
+  id: string;
+  tipo: string;
+  campo: string;
+  subcampo: string;
+  titulo: string;
+  status: boolean;
+};
+
 export default function CadastroPagamento() {
   const [obras, setObras] = useState<Obra[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [idObraSelecionada, setIdObraSelecionada] = useState("");
-  const [categoria, setCategoria] = useState("");
-  const [tipoMaterial, setTipoMaterial] = useState("");
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState("");
+  const [subcategoriaSelecionada, setSubcategoriaSelecionada] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  const categorias = [
-    "Custo Terreno",
-    "Taxa Prefeitura",
-    "Mão Obra",
-    "Custo Obra",
-    "Energia e Água",
-    "Premios",
-    "Material",
-  ];
-
-  const tiposMaterial = [
-    "Madeira",
-    "Ferragem",
-    "Cal/Cimento",
-    "Tijolo",
-    "Concreto",
-    "Areia/Pedra",
-    "Outros",
-    "Encanamento",
-    "Elétrico",
-    "Cobertura",
-    "Piso",
-    "Gesso",
-    "Granito",
-  ];
+  const searchParams = useSearchParams();
+  const idDaURL = searchParams.get("id") || "";
 
   useEffect(() => {
-    async function fetchObras() {
+    async function fetchData() {
       try {
         const session = await getSession();
         const token = session?.token;
 
-        const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const obrasRes = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        if (!res.ok) throw new Error("Erro ao carregar obras.");
-        const data = await res.json();
-        setObras(data);
-        setIdObraSelecionada(data[0]?.ID || "");
+        const obrasData = await obrasRes.json();
+
+        if (!Array.isArray(obrasData) || obrasData.length === 0) {
+          setErro("Por favor, cadastre um nova obra para listar");
+          return;
+        }
+
+        setObras(obrasData);
+        setIdObraSelecionada(idDaURL || obrasData[0]?.ID || "");
+
+        const catRes = await fetch("https://backendgestaoobra.onrender.com/api/categoria/props", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const catData = await catRes.json();
+        setCategorias(catData.filter((c: Categoria) => c.status));
       } catch (err: any) {
         setErro(err.message || "Erro desconhecido.");
       }
     }
-    fetchObras();
-  }, []);
+
+    fetchData();
+  }, [idDaURL]);
+
+  const camposUnicos = Array.from(new Set(categorias.map((c) => c.campo)));
+
+  const subcategorias = categorias
+    .filter((c) => c.campo === categoriaSelecionada && c.subcampo.trim())
+    .map((c) => c.titulo);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!(event.currentTarget instanceof HTMLFormElement)) return;
-
     setIsLoading(true);
-    const formData = new FormData(event.currentTarget);
 
-    const valorInput = String(formData.get("valor")).replace(",", ".");
+    const formData = new FormData(event.currentTarget);
+    const valorRaw = formData.get("valor");
+
+    if (!valorRaw || typeof valorRaw !== "string" || !valorRaw.trim()) {
+      toast.error("Campo valor está vazio.");
+      setIsLoading(false);
+      return;
+    }
+
+    const valorInput = valorRaw.replace(/\./g, "").replace(",", ".");
     const valor = parseFloat(valorInput);
     if (isNaN(valor)) {
       toast.error("Valor inválido.");
@@ -80,8 +90,7 @@ export default function CadastroPagamento() {
       return;
     }
 
-    const categoriaFinal =
-      categoria === "Material" ? `Material - ${tipoMaterial}` : categoria;
+    const categoriaFinal = subcategoriaSelecionada || categoriaSelecionada;
 
     const payload = {
       idObra: idObraSelecionada,
@@ -107,12 +116,13 @@ export default function CadastroPagamento() {
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Erro ao registrar pagamento.");
+
       toast.success("Pagamento registrado com sucesso!");
       if (event.currentTarget instanceof HTMLFormElement) {
         event.currentTarget.reset();
       }
-      setCategoria("");
-      setTipoMaterial("");
+      setCategoriaSelecionada("");
+      setSubcategoriaSelecionada("");
     } catch (error: any) {
       toast.error(error.message || "Erro ao enviar.");
     } finally {
@@ -122,123 +132,126 @@ export default function CadastroPagamento() {
 
   return (
     <DefautPage>
-      <section className="col-span-3 sm:col-span-8">
+      <section className="col-span-3 sm:col-span-4">
         <h1 className="text-2xl font-semibold mb-4 text-gray-800">Cadastrar Pagamento</h1>
 
         {erro && (
-          <p className="text-red-600 mb-4 bg-red-100 px-4 py-2 rounded">{erro}</p>
+          <p className="text-center text-red-600 bg-red-100 px-4 py-2 rounded mt-4">{erro}</p>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded shadow">
-          <div>
-            <label htmlFor="obra" className="block mb-1 text-sm font-medium text-gray-700">Obra</label>
-            <select
-              id="obra"
-              required
-              value={idObraSelecionada}
-              onChange={(e) => setIdObraSelecionada(e.target.value)}
-              className="w-full border px-4 py-2 rounded"
-            >
-              {obras.map((obra) => (
-                <option key={obra.ID} value={obra.ID}>{obra.Nome}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="data_pagamento" className="block mb-1 text-sm font-medium text-gray-700">Data do Pagamento</label>
-            <input
-              type="date"
-              name="data_pagamento"
-              id="data_pagamento"
-              defaultValue={new Date().toISOString().split("T")[0]}
-              required
-              className="w-full border px-4 py-2 rounded"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="categoria" className="block mb-1 text-sm font-medium text-gray-700">Categoria</label>
-            <select
-              name="categoria"
-              required
-              value={categoria}
-              onChange={(e) => setCategoria(e.target.value)}
-              className="w-full border px-4 py-2 rounded"
-            >
-              <option value="" disabled>Selecione a categoria</option>
-              {categorias.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-
-          {categoria === "Material" && (
+        {!erro && (
+          <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded shadow">
             <div>
-              <label htmlFor="tipo_material" className="block mb-1 text-sm font-medium text-gray-700">
-                Tipo de Material
-              </label>
+              <label htmlFor="obra" className="block mb-1 text-sm font-medium text-gray-700">Obra</label>
               <select
-                name="tipo_material"
+                id="obra"
                 required
-                value={tipoMaterial}
-                onChange={(e) => setTipoMaterial(e.target.value)}
+                value={idObraSelecionada}
+                onChange={(e) => setIdObraSelecionada(e.target.value)}
                 className="w-full border px-4 py-2 rounded"
               >
-                <option value="" disabled>Selecione o tipo</option>
-                {tiposMaterial.map((tipo) => (
-                  <option key={tipo} value={tipo}>Material - {tipo}</option>
+                {obras.map((obra) => (
+                  <option key={obra.ID} value={obra.ID}>{obra.Nome}</option>
                 ))}
               </select>
             </div>
-          )}
 
-          <div>
-            <label htmlFor="valor" className="block mb-1 text-sm font-medium text-gray-700">Valor</label>
-            <div className="relative">
-              <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
+            <div>
+              <label htmlFor="data_pagamento" className="block mb-1 text-sm font-medium text-gray-700">Data do Pagamento</label>
               <input
-                type="text"
-                name="valor"
-                id="valor"
-                placeholder="Ex: 1500,00"
+                type="date"
+                name="data_pagamento"
+                id="data_pagamento"
+                defaultValue={new Date().toISOString().split("T")[0]}
                 required
-                className="pl-10 w-full border px-4 py-2 rounded"
+                className="w-full border px-4 py-2 rounded"
               />
             </div>
-          </div>
 
-          <div>
-            <label htmlFor="detalhe" className="block mb-1 text-sm font-medium text-gray-700">Detalhe</label>
-            <input
-              type="text"
-              name="detalhe"
-              id="detalhe"
-              required
-              placeholder="Ex: Compra de cimento"
-              className="w-full border px-4 py-2 rounded"
-            />
-          </div>
+            <div>
+              <label htmlFor="categoria" className="block mb-1 text-sm font-medium text-gray-700">Categoria</label>
+              <select
+                name="categoria"
+                required
+                value={categoriaSelecionada}
+                onChange={(e) => {
+                  setCategoriaSelecionada(e.target.value);
+                  setSubcategoriaSelecionada("");
+                }}
+                className="w-full border px-4 py-2 rounded"
+              >
+                <option value="" disabled>Selecione a categoria</option>
+                {camposUnicos.map((campo) => (
+                  <option key={campo} value={campo}>{campo}</option>
+                ))}
+              </select>
+            </div>
 
-          <div>
-            <label htmlFor="observacao" className="block mb-1 text-sm font-medium text-gray-700">Observação (opcional)</label>
-            <textarea
-              name="observacao"
-              id="observacao"
-              rows={3}
-              placeholder="Observações adicionais..."
-              className="w-full border px-4 py-2 rounded"
-            />
-          </div>
+            {subcategorias.length > 0 && (
+              <div>
+                <label htmlFor="subcategoria" className="block mb-1 text-sm font-medium text-gray-700">Tipo</label>
+                <select
+                  name="subcategoria"
+                  required
+                  value={subcategoriaSelecionada}
+                  onChange={(e) => setSubcategoriaSelecionada(e.target.value)}
+                  className="w-full border px-4 py-2 rounded"
+                >
+                  <option value="" disabled>Selecione a Tipo</option>
+                  {subcategorias.map((titulo) => (
+                    <option key={titulo} value={titulo}>{titulo}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
-          >
-            {isLoading ? "Registrando..." : "Registrar Pagamento"}
-          </button>
-        </form>
+            <div>
+              <label htmlFor="valor" className="block mb-1 text-sm font-medium text-gray-700">Valor</label>
+              <div className="relative">
+                <span className="absolute left-3 top-2.5 text-gray-500">R$</span>
+                <input
+                  type="text"
+                  name="valor"
+                  id="valor"
+                  placeholder="Ex: 1500,00"
+                  required
+                  className="pl-10 w-full border px-4 py-2 rounded"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="detalhe" className="block mb-1 text-sm font-medium text-gray-700">Detalhe</label>
+              <input
+                type="text"
+                name="detalhe"
+                id="detalhe"
+                required
+                placeholder="Ex: Compra de cimento"
+                className="w-full border px-4 py-2 rounded"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="observacao" className="block mb-1 text-sm font-medium text-gray-700">Observação (opcional)</label>
+              <textarea
+                name="observacao"
+                id="observacao"
+                rows={3}
+                placeholder="Observações adicionais..."
+                className="w-full border px-4 py-2 rounded"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="buttomForm"
+            >
+              {isLoading ? "Registrando..." : "Registrar Pagamento"}
+            </button>
+          </form>
+        )}
       </section>
     </DefautPage>
   );

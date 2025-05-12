@@ -4,6 +4,7 @@ import DefautPage from "@/components/defautpage";
 import toast from "react-hot-toast";
 import { getSession } from "next-auth/react";
 import { fetchComToken } from "@/lib/fetchComToken";
+import { useSearchParams } from "next/navigation";
 
 const categorias = [
   "Custo Terreno", "Taxa Prefeitura", "Mão Obra",
@@ -39,6 +40,9 @@ export default function ListaPagamentosCompleta() {
   const [carregandoObra, setCarregandoObra] = useState(false);
   const itensPorPagina = 10;
 
+  const searchParams = useSearchParams();
+  const idDaURL = searchParams.get("id") || "";
+
   useEffect(() => {
     async function fetchObras() {
       const session = await getSession();
@@ -48,12 +52,17 @@ export default function ListaPagamentosCompleta() {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = await res.json();
+      let data = await res.json();
+      if (!Array.isArray(data)) data = [];
       setObras(data);
-      setObraSelecionada(data[0]?.ID || "");
+      const existeNaLista = data.some((obra: Obra) => obra.ID === idDaURL);
+
+      setObraSelecionada(
+        existeNaLista ? idDaURL : data[0]?.ID || ""
+      );
     }
     fetchObras();
-  }, []);
+  }, [idDaURL]);
 
   useEffect(() => {
     if (obraSelecionada) {
@@ -146,7 +155,7 @@ export default function ListaPagamentosCompleta() {
         <h1 className="text-2xl font-bold mb-4">Pagamentos Realizados</h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
-          <select className="border px-2 py-2 rounded w-full" disabled={carregandoObra} value={obraSelecionada} onChange={e => { setObraSelecionada(e.target.value); limparFiltros(); }}>
+          <select className="border px-2 py-2 rounded w-full" disabled={carregandoObra || !!idDaURL} value={obraSelecionada} onChange={e => { setObraSelecionada(e.target.value); limparFiltros(); }}>
             {obras.map(o => <option key={o.ID} value={o.ID}>{o.Nome}</option>)}
           </select>
 
