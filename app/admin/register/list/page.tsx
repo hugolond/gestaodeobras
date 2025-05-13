@@ -5,7 +5,8 @@ import toast from "react-hot-toast";
 import { getSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { DropletIcon, Edit2Icon, EraserIcon, Plus, SaveAllIcon, Trash2Icon } from "lucide-react";
+import { TrashIcon } from "@heroicons/react/24/solid";
 
 type Obra = {
   ID: string;
@@ -173,6 +174,7 @@ export default function ListaPagamentosCompleta() {
             type="date"
             className="border px-2 py-2 rounded w-full"
             value={filtros.data}
+            placeholder="data"
             onChange={e => setFiltros({ ...filtros, data: e.target.value })}
           />
 
@@ -184,71 +186,120 @@ export default function ListaPagamentosCompleta() {
         ) : visiveis.length === 0 ? (
           <p className="text-center text-gray-500 my-4">Nenhum pagamento encontrado com os filtros atuais.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px] border text-sm bg-white shadow">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="p-2 text-center">Data</th>
-                  <th className="p-2 text-start">Categoria</th>
-                  <th className="p-2 text-start">Detalhe</th>
-                  <th className="p-2 text-center">Valor</th>
-                  <th className="p-2">Observação</th>
-                  <th className="p-2 text-center">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visiveis.map(p => (
-                  <tr key={p.id} className="border-t">
-                    <td className="p-2 text-center">
-                      {editing === p.id ? (
-                        <input type="date" defaultValue={p.datapagamento.split("T")[0]} onChange={e => setEditValues(v => ({ ...v, datapagamento: e.target.value }))} />
-                      ) : formatDate(p.datapagamento)}
-                    </td>
-                    <td className="p-2 text-start">
-                      {editing === p.id ? (
-                        <select defaultValue={p.categoria} onChange={e => setEditValues(v => ({ ...v, categoria: e.target.value }))}>
-                          {categorias.map(c => <option key={c.id} value={c.titulo}>{c.titulo}</option>)}
-                        </select>
-                      ) : p.categoria}
-                    </td>
-                    <td className="p-2 text-start">
-                      {editing === p.id ? (
-                        <input type="text" defaultValue={p.detalhe} onChange={e => setEditValues(v => ({ ...v, detalhe: e.target.value }))} />
-                      ) : p.detalhe}
-                    </td>
-                    <td className="p-2 text-center">
-                      {editing === p.id ? (
-                        <span className="flex items-center gap-1">
-                          R$
-                          <input
-                            type="text"
-                            className="border px-1 py-1 rounded w-20"
-                            defaultValue={p.valor.toString().replace(".", ",")}
-                            onChange={e => setEditValues(v => ({ ...v, valor: parseFloat(e.target.value.replace(",", ".")) }))}
-                          />
-                        </span>
-                      ) : p.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                    </td>
-                    <td className="p-2">
-                      {editing === p.id ? (
-                        <input type="text" defaultValue={p.observacao} onChange={e => setEditValues(v => ({ ...v, observacao: e.target.value }))} />
-                      ) : p.observacao}
-                    </td>
-                    <td className="p-2 text-center space-x-2">
-                      {editing === p.id ? (
-                        <button onClick={handleSalvar} className="text-sm bg-green-600 text-white px-2 py-1 rounded">Salvar</button>
-                      ) : (
-                        <button onClick={() => { setEditing(p.id); setEditValues(p); }} className="text-sm bg-blue-600 text-white px-2 py-1 rounded">Editar</button>
-                      )}
-                      <button onClick={() => handleExcluir(p.id)} className="text-sm bg-red-600 text-white px-2 py-1 rounded">Excluir</button>
-                    </td>
-                  </tr>
+          <>
+          {/* Inicio tabela Mobile */}
+          <div className="grid gap-4 sm:hidden block">
+                {visiveis.map((p) => ( 
+                  <div key={p.id} className="bg-white p-4 rounded shadow text-base space-y-2 ">
+                    <div className="grid grid-cols-2"><span className="font-bold">Data:</span> 
+                            {editing === p.id ? (
+                              <input type="date" defaultValue={p.datapagamento.split("T")[0]} onChange={e => setEditValues(v => ({ ...v, datapagamento: e.target.value }))} />
+                            ) : formatDate(p.datapagamento)} 
+                    </div>
+                    <div className="grid grid-cols-2"><span className="font-semibold">Categoria:</span> 
+                            {editing === p.id ? (
+                              <select defaultValue={p.categoria} onChange={e => setEditValues(v => ({ ...v, categoria: e.target.value }))}>
+                                {categorias.map(c => <option key={c.id} value={c.titulo}>{c.titulo}</option>)}
+                              </select>
+                            ) : p.categoria}</div>
+                    <div className="grid grid-cols-2"><span className="font-semibold">Detalhe:</span> 
+                            {editing === p.id ? (
+                              <input type="text" defaultValue={p.detalhe} onChange={e => setEditValues(v => ({ ...v, detalhe: e.target.value }))} />
+                            ) : p.detalhe}</div>
+                    <div className="grid grid-cols-2"><span className="font-semibold">Valor:</span> 
+                            {editing === p.id ? (
+                              <span className="flex items-center gap-1">
+                                R$
+                                <input
+                                  type="text"
+                                  className="border px-1 py-1 rounded w-20"
+                                  defaultValue={p.valor.toString().replace(".", ",")}
+                                  onChange={e => setEditValues(v => ({ ...v, valor: parseFloat(e.target.value.replace(",", ".")) }))} />
+                              </span>
+                            ) : p.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</div>
+                    <div className="grid grid-cols-2"><span className="font-semibold">Observação:</span> 
+                            {editing === p.id ? (
+                              <input type="text" defaultValue={p.observacao} onChange={e => setEditValues(v => ({ ...v, observacao: e.target.value }))} />
+                            ) : p.observacao}</div>
+                    <div className="flex justify-end gap-4 p-4">
+                            {editing === p.id ? (
+                            <button onClick={handleSalvar} className="text-sm bg-green-600 text-white px-2 py-1 rounded">
+                                <SaveAllIcon/></button>
+                            ) : (
+                            <button onClick={() => { setEditing(p.id); setEditValues(p); } } className="text-sm bg-blue-600 text-white px-2 py-1 rounded">
+                                <Edit2Icon/></button>
+                            )}
+                            <button onClick={() => handleExcluir(p.id)} className="text-sm bg-red-600 text-white px-2 py-1 rounded">
+                                <Trash2Icon/></button>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
           </div>
+          {/* Inicio tabela Desk */}
+          <div className="overflow-x-auto sm:block hidden">
+                  <table className="w-full min-w-[700px] border text-sm bg-white shadow">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="p-2 text-center">Data</th>
+                        <th className="p-2 text-start">Categoria</th>
+                        <th className="p-2 text-start">Detalhe</th>
+                        <th className="p-2 text-center">Valor</th>
+                        <th className="p-2">Observação</th>
+                        <th className="p-2 text-center">Ações</th>
+                      </tr>
+                    </thead>
+                    
+                    <tbody>
+                      {visiveis.map(p => (
+                        <tr key={p.id} className="border-t">
+                          <td className="p-2 text-center">
+                            {editing === p.id ? (
+                              <input type="date" defaultValue={p.datapagamento.split("T")[0]} onChange={e => setEditValues(v => ({ ...v, datapagamento: e.target.value }))} />
+                            ) : formatDate(p.datapagamento)}
+                          </td>
+                          <td className="p-2 text-start">
+                            {editing === p.id ? (
+                              <select defaultValue={p.categoria} onChange={e => setEditValues(v => ({ ...v, categoria: e.target.value }))}>
+                                {categorias.map(c => <option key={c.id} value={c.titulo}>{c.titulo}</option>)}
+                              </select>
+                            ) : p.categoria}
+                          </td>
+                          <td className="p-2 text-start">
+                            {editing === p.id ? (
+                              <input type="text" defaultValue={p.detalhe} onChange={e => setEditValues(v => ({ ...v, detalhe: e.target.value }))} />
+                            ) : p.detalhe}
+                          </td>
+                          <td className="p-2 text-center">
+                            {editing === p.id ? (
+                              <span className="flex items-center gap-1">
+                                R$
+                                <input
+                                  type="text"
+                                  className="border px-1 py-1 rounded w-20"
+                                  defaultValue={p.valor.toString().replace(".", ",")}
+                                  onChange={e => setEditValues(v => ({ ...v, valor: parseFloat(e.target.value.replace(",", ".")) }))} />
+                              </span>
+                            ) : p.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                          </td>
+                          <td className="p-2">
+                            {editing === p.id ? (
+                              <input type="text" defaultValue={p.observacao} onChange={e => setEditValues(v => ({ ...v, observacao: e.target.value }))} />
+                            ) : p.observacao}
+                          </td>
+                          <td className="p-2 text-center space-x-2">
+                            {editing === p.id ? (
+                              <button onClick={handleSalvar} className="text-sm bg-green-600 text-white px-2 py-1 rounded">Salvar</button>
+                            ) : (
+                              <button onClick={() => { setEditing(p.id); setEditValues(p); } } className="text-sm bg-blue-600 text-white px-2 py-1 rounded">Editar</button>
+                            )}
+                            <button onClick={() => handleExcluir(p.id)} className="text-sm bg-red-600 text-white px-2 py-1 rounded">Excluir</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+          </div></>
         )}
-
         <div className="flex justify-center gap-2 mt-4 flex-wrap">
           {Array.from({ length: totalPaginas }, (_, i) => (
             <button

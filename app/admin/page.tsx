@@ -126,14 +126,14 @@ export default function DashboardUnificado() {
 
             <div className="grid grid-cols-2 gap-4">
               <Card>
-                <CardContent className="p-4">
-                  <p className="text-sm text-muted-foreground">Obras ativas</p>
+                <CardContent className="p-4 text-center">
+                  <p className="sm:text-xl text-sm text-muted-foreground">Obras ativas</p>
                   <p className="text-3xl font-bold text-gray-500">{obrasUnicas}</p>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="p-4">
-                  <p className="text-sm text-muted-foreground">Pagamentos lançados</p>
+                <CardContent className="p-4 text-center">
+                  <p className="sm:text-xl text-sm text-muted-foreground">Pagamentos lançados</p>
                   <p className="text-3xl font-bold text-gray-500">{totalPagamentos}</p>
                 </CardContent>
               </Card>
@@ -143,7 +143,7 @@ export default function DashboardUnificado() {
               <>
                 <Card>
                   <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground mb-4">
+                    <p className="sm:text-xl text-sm text-center text-muted-foreground mb-4">
                       Resumo de pagamentos por obra
                     </p>
                     <ResponsiveContainer width="100%" height={alturaGrafico}>
