@@ -32,6 +32,7 @@ interface ObraPagamento {
 interface ChartItem {
   name: string;
   valor: number;
+  previsto: number;
 }
 
 export default function DashboardUnificado() {
@@ -78,7 +79,7 @@ export default function DashboardUnificado() {
                 acc[curr.nome] = { valor: 0, previsto: 0 };
               }
               acc[curr.nome].valor += curr.valor;
-              acc[curr.nome].previsto += curr.previsto;
+              acc[curr.nome].previsto = curr.previsto;
               return acc;
             }, {} as Record<string, { valor: number; previsto: number }>);
             
@@ -108,7 +109,7 @@ export default function DashboardUnificado() {
 
   const totalPagamentos = stats?.length ?? 0;
   const obrasUnicas = new Set(stats?.map((s) => s.nome) ?? []).size;
-  const alturaGrafico = (chartData?.length ?? 0) * 60;
+  const alturaGrafico = (chartData?.length ?? 0) * 90;
 
   return (
     <DefautPage>

@@ -130,7 +130,7 @@ const TelaAcompanhamentoPagamentos = () => {
 
   return (
     <DefautPage>
-      <section className="col-span-3 sm:col-span-8">
+      <section className="col-span-4 sm:col-span-8">
         <h1 className="text-3xl sm:text-2xl font-bold mb-6 text-gray-800">
           Acompanhamento de Pagamentos por Categoria
         </h1>
@@ -181,7 +181,7 @@ const TelaAcompanhamentoPagamentos = () => {
             ) : (
               <div
                 ref={componenteRef}
-                className="bg-white rounded-xl shadow p-4 sm:p-6 w-full min-w-[300px] sm:min-w-[768px] overflow-visible"
+                className="bg-white rounded-xl shadow p-4 sm:p-6 w-full min-w-[300px] sm:min-w-[568px] overflow-visible"
                 style={{
                   width: "100%",
                   maxWidth: "768px",
