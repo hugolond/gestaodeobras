@@ -59,9 +59,9 @@ export default function Form({ type }: { type: "login" | "register" }) {
           });
         }
       }}
-      className="w-full max-w-md mx-auto p-6 rounded-lg bg-[#0D1B2A] shadow-xl space-y-6"
+      className="w-full max-w-md mx-auto p-6 rounded-lg bg-white shadow-xl space-y-6"
     >
-      <h2 className="text-center text-white text-2xl font-bold">
+      <h2 className="text-center text-gray-500 text-2xl font-bold">
         {type === "login" ? "Entrar no Sistema" : "Criar Conta"}
       </h2>
 
@@ -72,7 +72,7 @@ export default function Form({ type }: { type: "login" | "register" }) {
           type="text"
           label="Nome Completo"
           required
-          className="text-white"
+          className="text-black"
         />
       )}
 
@@ -82,7 +82,7 @@ export default function Form({ type }: { type: "login" | "register" }) {
         type="email"
         label="E-mail"
         required
-        className="text-white placeholder-white"
+        className="text-black placeholder-white"
       />
 
       <TEInput
@@ -91,7 +91,7 @@ export default function Form({ type }: { type: "login" | "register" }) {
         type="password"
         label="Senha"
         required
-        className="text-white"
+        className="text-black"
       />
 
       <button
@@ -109,7 +109,7 @@ export default function Form({ type }: { type: "login" | "register" }) {
         {type === "login" ? (
           <>
             Ainda não possui cadastro?{' '}
-            <Link href="/register" className="font-semibold text-[#778DA9] hover:underline">
+            <Link href="/register" className="font-semibold text-[#0D1B2A] hover:underline">
               Registre-se
             </Link>
             .
