@@ -3,21 +3,20 @@ import React, { useEffect, useState } from "react";
 import DefautPage from "@/components/defautpage";
 import toast from "react-hot-toast";
 import { getSession } from "next-auth/react";
-import { fetchComToken } from "@/lib/fetchComToken";
 import { useSearchParams } from "next/navigation";
-
-const categorias = [
-  "Custo Terreno", "Taxa Prefeitura", "Mão Obra",
-  "Material - Madeira", "Custo Obra", "Material - Ferragem",
-  "Material - Cal/Cimento", "Material - Tijolo", "Material - Concreto",
-  "Material - Areia/Pedra", "Material - Outros", "Energia e Água",
-  "Material - Encanamento", "Material - Elétrico", "Premios",
-  "Material - Cobertura", "Material - Piso", "Material - Gesso", "Material - Granito" , "Material - Tinta"
-];
 
 type Obra = {
   ID: string;
   Nome: string;
+};
+
+type Categoria = {
+  id: string;
+  tipo: string;
+  campo: string;
+  subcampo: string;
+  titulo: string;
+  status: boolean;
 };
 
 type Pagamento = {
@@ -31,6 +30,7 @@ type Pagamento = {
 
 export default function ListaPagamentosCompleta() {
   const [obras, setObras] = useState<Obra[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [obraSelecionada, setObraSelecionada] = useState("");
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
   const [filtros, setFiltros] = useState({ categoria: "", data: "" });
@@ -44,24 +44,25 @@ export default function ListaPagamentosCompleta() {
   const idDaURL = searchParams.get("id") || "";
 
   useEffect(() => {
-    async function fetchObras() {
+    async function fetchInitialData() {
       const session = await getSession();
       const token = session?.token;
-      const res = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      let data = await res.json();
-      if (!Array.isArray(data)) data = [];
-      setObras(data);
-      const existeNaLista = data.some((obra: Obra) => obra.ID === idDaURL);
+      const headers = { Authorization: `Bearer ${token}` };
 
-      setObraSelecionada(
-        existeNaLista ? idDaURL : data[0]?.ID || ""
-      );
+      const obrasRes = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", { headers });
+      let obrasData = await obrasRes.json();
+      if (!Array.isArray(obrasData)) obrasData = [];
+      setObras(obrasData);
+      const existeNaLista = obrasData.some((obra: Obra) => obra.ID === idDaURL);
+      setObraSelecionada(existeNaLista ? idDaURL : obrasData[0]?.ID || "");
+
+      const catRes = await fetch("https://backendgestaoobra.onrender.com/api/categoria/props", { headers });
+      const catData = await catRes.json();
+      const filtradas = Array.isArray(catData) ? catData.filter((c: Categoria) => c.status) : [];
+      filtradas.sort((a, b) => a.titulo.localeCompare(b.titulo));
+      setCategorias(filtradas);
     }
-    fetchObras();
+    fetchInitialData();
   }, [idDaURL]);
 
   useEffect(() => {
@@ -161,7 +162,7 @@ export default function ListaPagamentosCompleta() {
 
           <select className="border px-2 py-2 rounded w-full" value={filtros.categoria} onChange={e => setFiltros({ ...filtros, categoria: e.target.value })}>
             <option value="">Todas as categorias</option>
-            {categorias.map(c => <option key={c} value={c}>{c}</option>)}
+            {categorias.map(c => <option key={c.id} value={c.titulo}>{c.titulo}</option>)}
           </select>
 
           <input
@@ -202,7 +203,7 @@ export default function ListaPagamentosCompleta() {
                     <td className="p-2 text-start">
                       {editing === p.id ? (
                         <select defaultValue={p.categoria} onChange={e => setEditValues(v => ({ ...v, categoria: e.target.value }))}>
-                          {categorias.map(c => <option key={c} value={c}>{c}</option>)}
+                          {categorias.map(c => <option key={c.id} value={c.titulo}>{c.titulo}</option>)}
                         </select>
                       ) : p.categoria}
                     </td>

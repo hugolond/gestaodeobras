@@ -132,7 +132,7 @@ export default function CadastroPagamento() {
 
   return (
     <DefautPage>
-      <section className="col-span-3 sm:col-span-4">
+      <section className="col-span-3 sm:col-span-4 pb-6">
         <h1 className="text-2xl font-semibold mb-4 text-gray-800">Cadastrar Pagamento</h1>
 
         {erro && (

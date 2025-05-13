@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { CalendarIcon, DevicePhoneMobileIcon, InformationCircleIcon } from '@heroicons/react/24/solid'
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import DefautPage from "@/components/defautpage";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Calendar, Plus } from "lucide-react";
 import {
   HomeIcon,
   BuildingLibraryIcon,
@@ -14,8 +15,16 @@ import {
   XCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/solid";
 
+const estiloicon = "size-6 text-gray-500"
+
+const tiposObra: Record<number, { text: string; icon: JSX.Element }> = {
+  1: { text: "Térrea", icon: <HomeIcon className="w-6 h-6 mr-1 text-gray-500" /> },
+  2: { text: "2 Andares", icon: <BuildingLibraryIcon className="w-6 h-6 mr-1 text-gray-500" /> },
+  3: { text: "3 Andares", icon: <BuildingOfficeIcon className="w-6 h-6 mr-1 text-gray-500" /> },
+};
 
 type Lote = {
   ID: string;
@@ -26,12 +35,8 @@ type Lote = {
   Tipo: string;
   Casagerminada: boolean;
   Status: boolean;
-};
-
-const tiposObra: Record<number, { text: string; icon: JSX.Element }> = {
-  1: { text: "Térrea", icon: <HomeIcon className="w-5 h-5 mr-1 text-gray-500" /> },
-  2: { text: "2 Andares", icon: <BuildingLibraryIcon className="w-5 h-5 mr-1 text-gray-500" /> },
-  3: { text: "3 Andares", icon: <BuildingOfficeIcon className="w-5 h-5 mr-1 text-gray-500" /> },
+  DataInicioObra?: string;
+  DataFinalObra?: string;
 };
 
 export default function TabelaLotes() {
@@ -80,9 +85,26 @@ export default function TabelaLotes() {
     fetchData();
   }, []);
 
+  const calcularProgresso = (inicio?: string, fim?: string): number => {
+    if (!inicio || !fim) return 0;
+    const dataInicio = new Date(inicio).getTime();
+    const dataFim = new Date(fim).getTime();
+    const agora = Date.now();
+    if (agora < dataInicio) return 0;
+    if (agora > dataFim) return 100;
+    const progresso = ((agora - dataInicio) / (dataFim - dataInicio)) * 100;
+    return Math.min(100, Math.max(0, progresso));
+  };
+
+  const formatarData = (dataStr?: string) => {
+    if (!dataStr) return "-";
+    const data = new Date(dataStr);
+    return data.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit" , timeZone: "UTC" });
+  };
+
   return (
     <DefautPage>
-      <section className="col-span-3 sm:col-span-8">
+      <section className="col-span-3 sm:col-span-8 pb-6">
         <h1 className="text-2xl font-semibold mb-4 text-gray-800">Obras Cadastradas</h1>
 
         {carregando && (
@@ -100,43 +122,83 @@ export default function TabelaLotes() {
         {!carregando && !erro && lotes.length > 0 && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 rounded-lg p-4 shadow bg-white shadow-md">
-              {lotesPaginados.map((lote) => (
-                <div
-                  key={lote.ID}
-                  onClick={() => router.push(`/admin/acomp?id=${lote.ID}`)}
-                  className="cursor-pointer border rounded-lg p-4 shadow hover:shadow-md transition hover:bg-blue-50"
-                >
-                  <h2 className="text-lg font-bold text-gray-800 mb-1">{lote.Nome}</h2>
-                  <p className="text-sm text-gray-600"><strong>Endereço:</strong> {lote.Endereco}</p>
-                  <p className="text-sm text-gray-600"><strong>Bairro:</strong> {lote.Bairro}</p>
-                  <p className="text-sm text-gray-600"><strong>Área:</strong> {lote.Area} m²</p>
-                  <div className="mt-2 flex items-center gap-2">
-                    {tiposObra[parseInt(lote.Tipo)]?.icon}
-                    <span className="text-sm">{tiposObra[parseInt(lote.Tipo)]?.text || "Tipo desconhecido"}</span>
+              {lotesPaginados.map((lote) => {
+                const progresso = calcularProgresso(lote.DataInicioObra, lote.DataFinalObra);
+                const agora = new Date();
+                const dataFinal = lote.DataFinalObra ? new Date(lote.DataFinalObra) : null;
+                const diasRestantes = dataFinal ? Math.ceil((dataFinal.getTime() - agora.getTime()) / (1000 * 60 * 60 * 24)) : null;
+
+                return (
+                  <div
+                    key={lote.ID}
+                    onClick={() => router.push(`/admin/acomp?id=${lote.ID}`)}
+                    className="cursor-pointer border rounded-lg p-4 shadow hover:shadow-md transition hover:bg-blue-50"
+                  >
+                    <h2 className="text-2xl font-bold text-gray-500 mb-1">{lote.Nome}</h2>
+                    <p className="text-sm text-gray-600"><strong>Endereço:</strong> {lote.Endereco}</p>
+                    <p className="text-sm text-gray-600"><strong>Bairro:</strong> {lote.Bairro}</p>
+                    <p className="text-sm text-gray-600"><strong>Área:</strong> {lote.Area} m²</p>
+                    
+                    <div className="mt-2 flex items-center gap-2">
+                      {tiposObra[parseInt(lote.Tipo)]?.icon}
+                      <span className="text-sm">{tiposObra[parseInt(lote.Tipo)]?.text || "Tipo desconhecido"}</span>
+                      {lote.Casagerminada && (
+                        <span className="ml-2 text-xs text-blue-600 font-medium">(Geminada)</span>
+                      )}
+                    </div>
+                    
+                    <div className="mt-2 flex items-center gap-2">
+                      <InformationCircleIcon className= {estiloicon}/> 
+                      <span
+                        className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
+                          lote.Status ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {lote.Status ? "Em Andamento" : "Concluída"}
+                      </span>
+                    </div>
+                      
+                      
+                    
+                    <div className="">
+                    <p className="text-sm text-gray-600">
+                    <div className="mt-2 flex items-center gap-1">
+                      <CalendarIcon className= {estiloicon}/> 
+                      <strong>  Prazo:</strong> {formatarData(lote.DataInicioObra)} a {formatarData(lote.DataFinalObra)}
+                    </div>
+                      
+                    </p>
+                      <div className="h-2 mt-2 bg-gray-200 rounded-full">
+                        <div
+                          className="h-2 bg-blue-600 rounded-full"
+                          style={{ width: `${progresso}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-left text-gray-500 mt-1">{progresso.toFixed(0)}%</p>
+                      {diasRestantes !== null && diasRestantes <= 30 && progresso < 100 && (
+                        <div className="flex items-center mt-1 text-xs text-yellow-600">
+                          <ExclamationTriangleIcon className="w-4 h-4 mr-1" />
+                          {diasRestantes} dia(s) restantes para o final.
+                        </div>
+                      )}
+                      {diasRestantes !== null && progresso >= 100 && lote.Status && (
+                        <div className="flex items-center mt-1 text-xs text-red-600">
+                          <ExclamationTriangleIcon className="w-4 h-4 mr-1" />
+                          Atrasada!
+                        </div>
+                      )}
+                      
+                    </div>
                   </div>
-                  <div className="mt-2">
-                    <span
-                      className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-                        lote.Status
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {lote.Status ? "Em Andamento" : "Concluída"}
-                    </span>
-                    {lote.Casagerminada && (
-                      <span className="ml-2 text-xs text-blue-600 font-medium">(Geminada)</span>
-                    )}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="flex justify-center items-center gap-2 mt-6">
               <button
                 onClick={() => setPaginaAtual((prev) => Math.max(prev - 1, 1))}
                 disabled={paginaAtual === 1}
-                className="flex items-center gap-1 px-3 py-1 rounded-full border text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition bg-white"
+                className="flex items-center gap-1 px-3 py-1 rounded-full border text-gray-600 hover:bg-gray-100 disabled:opacity-80 transition bg-white"
               >
                 <ChevronLeftIcon className="w-4 h-4" />
                 <span className="text-sm">Anterior</span>
@@ -163,7 +225,7 @@ export default function TabelaLotes() {
               <button
                 onClick={() => setPaginaAtual((prev) => Math.min(prev + 1, totalPaginas))}
                 disabled={paginaAtual === totalPaginas}
-                className="flex items-center gap-1 px-3 py-1 rounded-full border text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition bg-white"
+                className="flex items-center gap-1 px-3 py-1 rounded-full border text-gray-600 hover:bg-gray-100 disabled:opacity-80 transition bg-white"
               >
                 <span className="text-sm">Próximo</span>
                 <ChevronRightIcon className="w-4 h-4" />
@@ -173,7 +235,6 @@ export default function TabelaLotes() {
         )}
       </section>
 
-      {/* Botão flutuante para nova obra */}
       <Link
         href="/admin/obra/detalhes"
         className="fixed bottom-6 right-6 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"

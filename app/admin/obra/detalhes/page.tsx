@@ -84,7 +84,7 @@ export default function PageConsultaStatus() {
 
   return (
     <DefautPage>
-      <section className="col-span-3 sm:col-span-4">
+      <section className="col-span-3 sm:col-span-4 pb-6">
       <h1 className="text-3xl sm:text-2xl font-bold mb-6 text-gray-800">
           Cadastro da Obra
         </h1>
