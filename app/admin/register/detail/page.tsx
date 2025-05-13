@@ -36,6 +36,7 @@ export default function CadastroPagamento() {
       try {
         const session = await getSession();
         const token = session?.token;
+        const headers = { Authorization: `Bearer ${token}` };
 
         const obrasRes = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
           headers: { Authorization: `Bearer ${token}` },
@@ -50,11 +51,13 @@ export default function CadastroPagamento() {
         setObras(obrasData);
         setIdObraSelecionada(idDaURL || obrasData[0]?.ID || "");
 
-        const catRes = await fetch("https://backendgestaoobra.onrender.com/api/categoria/props", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const catRes = await fetch("https://backendgestaoobra.onrender.com/api/categoria/props", { headers });
         const catData = await catRes.json();
-        setCategorias(catData.filter((c: Categoria) => c.status));
+        const filtradas = Array.isArray(catData)
+          ? catData.filter((c: Categoria) => c.status && c.tipo === "ListaCategoria")
+          : [];
+        filtradas.sort((a, b) => a.titulo.localeCompare(b.titulo));
+        setCategorias(filtradas);
       } catch (err: any) {
         setErro(err.message || "Erro desconhecido.");
       }

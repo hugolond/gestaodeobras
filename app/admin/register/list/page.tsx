@@ -4,6 +4,8 @@ import DefautPage from "@/components/defautpage";
 import toast from "react-hot-toast";
 import { getSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
 type Obra = {
   ID: string;
@@ -58,7 +60,9 @@ export default function ListaPagamentosCompleta() {
 
       const catRes = await fetch("https://backendgestaoobra.onrender.com/api/categoria/props", { headers });
       const catData = await catRes.json();
-      const filtradas = Array.isArray(catData) ? catData.filter((c: Categoria) => c.status) : [];
+      const filtradas = Array.isArray(catData)
+        ? catData.filter((c: Categoria) => c.status && c.tipo === "ListaCategoria")
+        : [];
       filtradas.sort((a, b) => a.titulo.localeCompare(b.titulo));
       setCategorias(filtradas);
     }
@@ -257,6 +261,14 @@ export default function ListaPagamentosCompleta() {
           ))}
         </div>
       </section>
+      <Link
+        href={`/admin/register/detail?id=${obraSelecionada}`}
+        className="fixed bottom-6 right-6 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"
+        aria-label="Adicionar pagamento"
+      >
+        <Plus className="w-5 h-5" />
+        <span className="text-sm font-medium">Adicionar pagamento</span>
+      </Link>
     </DefautPage>
   );
 }
