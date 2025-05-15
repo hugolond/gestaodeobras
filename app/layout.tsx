@@ -11,6 +11,7 @@ import Sidebar from "./admin/sidebar";
 import { getServerSession } from "next-auth"
 import { authOptions } from "../app/api/auth/[...nextauth]/route";
 import React from "react";
+import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 
 import bg from '../public/fundo.png'
 
@@ -26,7 +27,7 @@ const roboto = Open_Sans({ weight: "400", subsets: ["latin"] });
 
 const title = "Gestão de Obra 2.0";
 const description =
-  "Gerenciamento de serviços";
+  "Gerenciador financeiro para pagamentos completo para controle de obras.";
 
 export const metadata = {
   title,
@@ -37,7 +38,6 @@ export const metadata = {
     description,
   },
   metadataBase: new URL("https://nextjs-postgres-auth.vercel.app"),
-  themeColor: "#FFF",
 };
 
 export const viewport: Viewport = {
@@ -59,6 +59,7 @@ export default async function RootLayout({
   return (
     <html lang="pt-br">
       <body className={roboto.className} style={styling} >
+      <GoogleAnalytics />
         <Toaster />
         <Suspense fallback="Carregando...">
           <AuthStatus />
