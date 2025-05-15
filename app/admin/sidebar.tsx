@@ -85,10 +85,10 @@ export default function Sidebar() {
           {elementVisiblePedidos && (
             <ul className="py-2 space-y-2">
               <li>
-                <BoxText className={sidebarBase} link="/admin/obra/detalhes" text="Cadastro" draw="" children/>
+                <BoxText className={sidebarBase} link="/admin/work/detail" text="Cadastro" draw="" children/>
               </li>
               <li>
-                <BoxText className={sidebarBase} link="/admin/obra/list" text="Listar" draw="" children/>
+                <BoxText className={sidebarBase} link="/admin/work/list" text="Listar" draw="" children/>
               </li>
             </ul>
           )}
@@ -112,10 +112,10 @@ export default function Sidebar() {
           {elementVisibleShip && (
             <ul className="py-2 space-y-2">
               <li>
-                <BoxText className={sidebarBase} link="/admin/register/detail" text="Registros" draw="" children/>
+                <BoxText className={sidebarBase} link="/admin/payment/detail" text="Registros" draw="" children/>
               </li>
               <li>
-                <BoxText className={sidebarBase} link="/admin/register/list" text="Listar" draw="" children/>
+                <BoxText className={sidebarBase} link="/admin/payment/list" text="Listar" draw="" children/>
               </li>
             </ul>
           )}
