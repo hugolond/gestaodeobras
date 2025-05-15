@@ -73,7 +73,7 @@ model Account {
 }
 
 model CadastroObra {
-  idobra          String     @id @default(uuid()) @db.Uuid
+  idobra          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nome            String?
   endereco        String?
   bairro          String?
