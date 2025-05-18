@@ -25,9 +25,9 @@ const styling = {
 
 const roboto = Open_Sans({ weight: "400", subsets: ["latin"] });
 
-const title = "Gestão de Obra 2.0";
+const title = "Gestão Obra Fácil";
 const description =
-  "Gerenciador financeiro para pagamentos completo para controle de obras.";
+  "Seu controle de obra no dia a dia. Gerenciador financeiro para pagamentos completo para controle de obras.";
 
 export const metadata = {
   title,

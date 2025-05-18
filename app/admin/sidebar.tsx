@@ -5,14 +5,7 @@ import { SessionProvider, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import Home from "../assets/home.svg";
-import Logout from "../assets/logout.svg";
 import Logo from "../assets/marca.png";
-import Pedido from "../assets/pedido.svg";
-import Setting from "../assets/setting.svg";
-import Ship from "../assets/ship.svg";
-import Cnpj from "../assets/cnpj.svg";
-import Client from "../assets/client.svg";
 import { BoxText } from "../admin/boxText";
 
 import { DevicePhoneMobileIcon ,HomeModernIcon ,CreditCardIcon, PresentationChartBarIcon ,AdjustmentsHorizontalIcon, ChevronDoubleLeftIcon } from '@heroicons/react/24/solid'
@@ -28,9 +21,9 @@ export default function Sidebar() {
   const estiloicon = "size-8 text-gray-400"
 
   const sidebarBase =
-    "flex items-center p-2 space-x-3 rounded-md text-white hover:bg-[#2C3E50] transition-colors duration-200";
+    "flex items-center p-2 space-x-3 rounded-md text-white hover:bg-[#28a9b8] transition-colors duration-200";
   const sidebarButton =
-    "flex w-full items-center p-3 space-x-3 rounded-md text-white font-semibold text-lg hover:bg-[#4169E1] transition-colors duration-200";
+    "flex w-full items-center p-3 space-x-3 rounded-md text-white font-semibold text-lg hover:bg-[#28a9b8] transition-colors duration-200";
   const sidebarSpan = "flex-1 ms-3 text-left whitespace-nowrap";
 
   return (
@@ -54,8 +47,8 @@ export default function Sidebar() {
           showSidebar ? "translate-x-0" : "-translate-x-full"
         } bg-[#0D1B2A] shadow-xl sm:translate-x-0`}
       >
-        <div className="bg-[#0D1B2A] flex items-center justify-center h-20 rounded-t-xl">
-          <Image className="h-auto m-2" priority src={Logo} alt="Logo" />
+        <div className="p-6 sm:p-8">
+          <Image className="bg-white rounded-lg bg-white shadow-xl" priority src={Logo} alt="Logo" />
         </div>
 
         <div className="px-3 py-4 overflow-y-auto">

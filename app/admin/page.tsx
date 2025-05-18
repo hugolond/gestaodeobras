@@ -128,13 +128,13 @@ export default function DashboardUnificado() {
               <Card>
                 <CardContent className="p-4 text-center">
                   <p className="sm:text-xl text-sm text-muted-foreground">Obras ativas</p>
-                  <p className="text-3xl font-bold text-gray-500">{obrasUnicas}</p>
+                  <p className="text-3xl font-bold text-[#28a9b8]">{obrasUnicas}</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <p className="sm:text-xl text-sm text-muted-foreground">Pagamentos lançados</p>
-                  <p className="text-3xl font-bold text-gray-500">{totalPagamentos}</p>
+                  <p className="text-3xl font-bold text-[#28a9b8]">{totalPagamentos}</p>
                 </CardContent>
               </Card>
             </div>
@@ -154,7 +154,7 @@ export default function DashboardUnificado() {
                       >
                         <XAxis type="number" hide />
                         <YAxis dataKey="name" type="category" width={60} />
-                        <Tooltip
+                        <Tooltip 
                           formatter={(value: number) =>
                             value.toLocaleString("pt-BR", {
                               style: "currency",
@@ -165,7 +165,7 @@ export default function DashboardUnificado() {
                         <Bar
                           dataKey="valor"
                           name="Pagamento"
-                          fill="#aaaaaa"
+                          fill="#28a9b8"
                           radius={[4, 4, 4, 4]}
                           label={{
                             position: "right",
@@ -206,7 +206,7 @@ export default function DashboardUnificado() {
       </section>
       <Link
         href="/admin/payment/detail"
-        className="fixed bottom-6 right-6 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"
+        className="fixed bottom-6 right-6 flex items-center gap-2 bg-[#28a9b8] hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"
         aria-label="Adicionar pagamento"
       >
         <Plus className="w-5 h-5" />

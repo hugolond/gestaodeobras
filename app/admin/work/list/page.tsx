@@ -143,7 +143,7 @@ export default function TabelaLotes() {
                       {tiposObra[parseInt(lote.Tipo)]?.icon}
                       <span className="text-sm">{tiposObra[parseInt(lote.Tipo)]?.text || "Tipo desconhecido"}</span>
                       {lote.Casagerminada && (
-                        <span className="ml-2 text-xs text-blue-600 font-medium">(Geminada)</span>
+                        <span className="ml-2 text-xs text-[#28a9b8] font-medium">(Geminada)</span>
                       )}
                     </div>
                     
@@ -151,7 +151,7 @@ export default function TabelaLotes() {
                       <InformationCircleIcon className= {estiloicon}/> 
                       <span
                         className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-                          lote.Status ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                          lote.Status ? "bg-[#28a9b8] text-white" : "bg-red-100 text-red-700"
                         }`}
                       >
                         {lote.Status ? "Em Andamento" : "Concluída"}
@@ -170,7 +170,7 @@ export default function TabelaLotes() {
                     </p>
                       <div className="h-2 mt-2 bg-gray-200 rounded-full">
                         <div
-                          className="h-2 bg-blue-600 rounded-full"
+                          className="h-2 bg-[#28a9b8] rounded-full"
                           style={{ width: `${progresso}%` }}
                         ></div>
                       </div>
@@ -213,7 +213,7 @@ export default function TabelaLotes() {
                     onClick={() => setPaginaAtual(numero)}
                     className={`px-4 py-1 text-sm rounded-full border font-medium transition ${
                       ativo
-                        ? "bg-blue-600 text-white border-blue-600 shadow"
+                        ? "bg-[#28a9b8] text-white border-[#28a9b8] shadow"
                         : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
                     }`}
                   >
@@ -237,7 +237,7 @@ export default function TabelaLotes() {
 
       <Link
         href="/admin/work/detail"
-        className="fixed bottom-6 right-6 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"
+        className="fixed bottom-6 right-6 flex items-center gap-2 bg-[#28a9b8] hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"
         aria-label="Adicionar pagamento"
       >
         <Plus className="w-5 h-5" />

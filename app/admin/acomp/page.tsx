@@ -242,7 +242,7 @@ const TelaAcompanhamentoPagamentos = () => {
       </section>
       <Link
         href={`/admin/payment/detail?id=${obraSelecionada}`}
-        className="fixed bottom-6 right-6 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"
+        className="fixed bottom-6 right-6 flex items-center gap-2 bg-[#28a9b8] hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"
         aria-label="Adicionar pagamento"
       >
         <Plus className="w-5 h-5" />

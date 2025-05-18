@@ -226,7 +226,7 @@ export default function ListaPagamentosCompleta() {
                             <button onClick={handleSalvar} className="text-sm bg-green-600 text-white px-2 py-1 rounded">
                                 <SaveAllIcon/></button>
                             ) : (
-                            <button onClick={() => { setEditing(p.id); setEditValues(p); } } className="text-sm bg-blue-600 text-white px-2 py-1 rounded">
+                            <button onClick={() => { setEditing(p.id); setEditValues(p); } } className="text-sm bg-[#28a9b8] text-white px-2 py-1 rounded">
                                 <Edit2Icon/></button>
                             )}
                             <button onClick={() => handleExcluir(p.id)} className="text-sm bg-red-600 text-white px-2 py-1 rounded">
@@ -290,7 +290,7 @@ export default function ListaPagamentosCompleta() {
                             {editing === p.id ? (
                               <button onClick={handleSalvar} className="text-sm bg-green-600 text-white px-2 py-1 rounded">Salvar</button>
                             ) : (
-                              <button onClick={() => { setEditing(p.id); setEditValues(p); } } className="text-sm bg-blue-600 text-white px-2 py-1 rounded">Editar</button>
+                              <button onClick={() => { setEditing(p.id); setEditValues(p); } } className="text-sm bg-[#28a9b8] text-white px-2 py-1 rounded">Editar</button>
                             )}
                             <button onClick={() => handleExcluir(p.id)} className="text-sm bg-red-600 text-white px-2 py-1 rounded">Excluir</button>
                           </td>
@@ -305,7 +305,7 @@ export default function ListaPagamentosCompleta() {
             <button
               key={i}
               onClick={() => setPaginaAtual(i + 1)}
-              className={`px-3 py-1 rounded border ${paginaAtual === i + 1 ? "bg-blue-600 text-white" : "bg-white text-gray-700"}`}
+              className={`px-3 py-1 rounded border ${paginaAtual === i + 1 ? "bg-[#28a9b8] text-white" : "bg-white text-gray-700"}`}
             >
               {i + 1}
             </button>
@@ -314,7 +314,7 @@ export default function ListaPagamentosCompleta() {
       </section>
       <Link
         href={`/admin/payment/detail?id=${obraSelecionada}`}
-        className="fixed bottom-6 right-6 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"
+        className="fixed bottom-6 right-6 flex items-center gap-2 bg-[#28a9b8] hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-colors z-50"
         aria-label="Adicionar pagamento"
       >
         <Plus className="w-5 h-5" />
