@@ -108,9 +108,9 @@ export default function Form({ type }: { type: "login" | "register" }) {
       <p className="text-center text-sm text-[#A9B8C9]">
         {type === "login" ? (
           <>
-            Ainda não possui cadastro?{' '}
-            <Link href="/register" className="font-semibold text-[#0D1B2A] hover:underline">
-              Registre-se
+            Esqueceu sua senha de acesso?{' '}
+            <Link href="/forgot-password" className="font-semibold text-[#0D1B2A] hover:underline">
+              Clique aqui
             </Link>
             .
           </>
