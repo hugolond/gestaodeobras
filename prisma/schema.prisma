@@ -1,5 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol", "multiSchema"]
 }
 
 datasource db {
@@ -11,20 +15,22 @@ datasource db {
 }
 
 model User {
-  id            String                @id @default(uuid())
-  username      String
-  email         String                @unique
-  password      String
-  active        Boolean
-  roles         String
-  departament   String
-  emailmanager  String
-  createdat     DateTime              @default(now())
-  updatedat     DateTime
+  id           String   @id @default(uuid())
+  username     String
+  email        String   @unique
+  password     String
+  active       Boolean
+  roles        String
+  departament  String
+  emailmanager String
+  createdat    DateTime @default(now())
+  updatedat    DateTime
 
-  account_id    String?               @db.Uuid
-  account       Account?              @relation(fields: [account_id], references: [id])
-  Session       Session[]
+  account_id   String?  @db.Uuid
+  account      Account? @relation(fields: [account_id], references: [id])
+
+  Session      Session[]
+  
   resetTokens   PasswordResetToken[]  @relation("UserResetTokens")
 
   @@map("User")
@@ -52,30 +58,16 @@ model VerificationToken {
   @@schema("public")
 }
 
-model PasswordResetToken {
-  id         Int      @id @default(autoincrement())
-  user_id    String
-  token      String   @unique
-  created_at DateTime @default(now())
-  expires_at DateTime
-  used       Boolean  @default(false)
-
-  user       User     @relation(name: "UserResetTokens", fields: [user_id], references: [id])
-
-  @@map("password_reset_tokens")
-  @@schema("public")
-}
-
 model Account {
-  id         String     @id @default(uuid()) @db.Uuid
-  nome       String
-  email      String     @unique
-  createdAt  DateTime   @default(now()) @map("created_at")
-  updatedAt  DateTime   @default(now()) @map("updated_at")
-  status     Boolean    @default(false)
+  id        String   @id @default(uuid()) @db.Uuid
+  nome      String
+  email     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+  status    Boolean  @default(false)
 
-  users      User[]
-  obras      CadastroObra[]
+  users     User[]
+  obras     CadastroObra[]
   pagamentos Pagamento[]
 
   @@map("account")
@@ -83,46 +75,46 @@ model Account {
 }
 
 model CadastroObra {
-  idobra         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome           String?
-  endereco       String?
-  bairro         String?
-  area           String?
-  tipo           String?
-  casagerminada  Boolean?
-  status         Boolean?
-  dataInicioObra DateTime?  @map("data_inicio_obra")
-  dataFinalObra  DateTime?  @map("data_final_obra")
-  createdAt      DateTime?  @default(now()) @map("created_at")
-  updatedAt      DateTime?  @default(now()) @map("updated_at")
-  account_id     String?    @db.Uuid
-  userid_at      String?
-  username_at    String?
-  previsto       Float?
+  idobra          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome            String?
+  endereco        String?
+  bairro          String?
+  area            String?
+  tipo            String?
+  casagerminada   Boolean?
+  status          Boolean?
+  dataInicioObra  DateTime?  @map("data_inicio_obra")
+  dataFinalObra   DateTime?  @map("data_final_obra")
+  createdAt       DateTime?  @default(now()) @map("created_at")
+  updatedAt       DateTime?  @default(now()) @map("updated_at")
+  account_id      String?    @db.Uuid
+  userid_at       String?
+  username_at     String?
+  previsto        Float?
 
-  account        Account?   @relation(fields: [account_id], references: [id])
-  pagamentos     Pagamento[]
+  account         Account?   @relation(fields: [account_id], references: [id])
+  pagamentos      Pagamento[]
 
   @@map("cadastroobra")
   @@schema("obra")
 }
 
 model Pagamento {
-  id             Int       @id @default(autoincrement())
-  idobra         String?   @db.Uuid
-  dataPagamento  DateTime? @map("data_do_pagamento")
-  detalhe        String?
-  categoria      String?
-  valor          Float?
-  observacao     String?
-  createdAt      DateTime? @default(now()) @map("created_at")
-  updatedAt      DateTime? @default(now()) @map("updated_at")
-  account_id     String?   @db.Uuid
-  userid_at      String?
-  username_at    String?
+  id              Int       @id @default(autoincrement())
+  idobra          String?   @db.Uuid
+  dataPagamento   DateTime? @map("data_do_pagamento")
+  detalhe         String?
+  categoria       String?
+  valor           Float?
+  observacao      String?
+  createdAt       DateTime? @default(now()) @map("created_at")
+  updatedAt       DateTime? @default(now()) @map("updated_at")
+  account_id      String?   @db.Uuid
+  userid_at       String?
+  username_at     String?
 
-  obra           CadastroObra? @relation(fields: [idobra], references: [idobra])
-  account        Account?      @relation(fields: [account_id], references: [id])
+  obra            CadastroObra? @relation(fields: [idobra], references: [idobra])
+  account         Account?      @relation(fields: [account_id], references: [id])
 
   @@map("pagamento")
   @@schema("obra")
@@ -138,4 +130,18 @@ model Props {
 
   @@map("props")
   @@schema("obra")
+}
+
+model PasswordResetToken {
+  id         Int      @id @default(autoincrement())
+  user_id    String
+  token      String   @unique
+  created_at DateTime @default(now())
+  expires_at DateTime
+  used       Boolean  @default(false)
+
+  user       User     @relation(name: "UserResetTokens", fields: [user_id], references: [id])
+
+  @@map("password_reset_tokens")
+  @@schema("public")
 }
