@@ -129,3 +129,16 @@ model Props {
   @@map("props")
   @@schema("obra")
 }
+model PasswordResetToken {
+  id         Int      @id @default(autoincrement())
+  user_id    String
+  token      String   @unique
+  created_at DateTime @default(now())
+  expires_at DateTime
+  used       Boolean  @default(false)
+
+  user       User     @relation(fields: [user_id], references: [id])
+
+  @@map("password_reset_tokens")
+  @@schema("public")
+}
