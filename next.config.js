@@ -1,19 +1,32 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compress: true, // ✅ GZIP ativo
+
+  swcMinify: true, // ✅ SWC otimizado
+
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, // ⚠️ Ignora erros TS apenas se necessário
   },
-  swcMinify: true,
-};
-module.exports = {
+
   experimental: {
-    forceSwcTransforms: true,
+    forceSwcTransforms: true, // ✅ Ativa transformações SWC
+    serverActions: true, // opcional se você usa App Router com ações do servidor
   },
-  typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
-    ignoreBuildErrors: true,
+
+  // headers úteis para cache (opcional)
+  headers: async () => {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
   },
 };
+
+module.exports = nextConfig;
