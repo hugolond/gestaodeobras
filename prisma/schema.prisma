@@ -146,3 +146,22 @@ model PasswordResetToken {
   @@map("password_reset_tokens")
   @@schema("public")
 }
+
+model Subscription {
+  id                  Int      @id @default(autoincrement())
+  userId              String?  @map("user_id")
+  stripeCustomer      String   @map("stripe_customer")
+  stripeSubscription  String   @map("stripe_subscription")
+  stripePriceId       String   @map("stripe_price_id")
+  stripeProductId     String   @map("stripe_product_id")
+  stripePlanAmount    BigInt   @map("stripe_plan_amount")
+  currency            String
+  interval            String
+  intervalCount       Int      @map("interval_count")
+  status              String
+  createdAt           DateTime? @default(now()) @map("created_at")
+  email               String?
+
+  @@map("subscriptions")
+  @@schema("obra")
+}
