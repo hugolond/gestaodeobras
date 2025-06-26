@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import DefautPage from "@/components/defautpage";
 import { getSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Plus, CalendarDays, DollarSign  } from "lucide-react";
@@ -36,6 +38,9 @@ interface ChartItem {
 }
 
 export default function DashboardUnificado() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
   const [stats, setStats] = useState<ObraPagamento[]>([]);
   const [chartData, setChartData] = useState<ChartItem[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -45,6 +50,11 @@ export default function DashboardUnificado() {
   const totalValor = chartData.reduce((acc, cur) => acc + cur.valor, 0);
   const totalPrevisto = chartData.reduce((acc, cur) => acc + cur.previsto, 0);
 
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
 
   useEffect(() => {
     const fetchDados = async () => {

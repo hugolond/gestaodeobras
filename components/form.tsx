@@ -41,7 +41,6 @@ export default function Form({ type }: { type: "login" | "register" }) {
             setLoading(false);
             toast.error(result.error);
           } else {
-            router.refresh();
             router.push("/admin");
           }
         } else {
