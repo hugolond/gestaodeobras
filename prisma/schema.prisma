@@ -64,6 +64,7 @@ model Account {
   email     String   @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
+  stripe_product_id String?  @db.Text   
   status    Boolean  @default(false)
 
   users     User[]

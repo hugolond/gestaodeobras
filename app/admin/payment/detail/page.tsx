@@ -38,7 +38,7 @@ export default function CadastroPagamento() {
         const token = session?.token;
         const headers = { Authorization: `Bearer ${token}` };
 
-        const obrasRes = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra", {
+        const obrasRes = await fetch("https://backendgestaoobra.onrender.com/api/obra/v1/listallobra?status=ativo", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const obrasData = await obrasRes.json();
@@ -135,7 +135,7 @@ export default function CadastroPagamento() {
 
   return (
     <DefautPage>
-      <section className="col-span-3 sm:col-span-4 pb-6">
+      <section className="col-span-3 sm:col-span-4 px-2 pb-24">
         <h1 className="text-2xl font-semibold mb-4 text-gray-800">Cadastrar Pagamento</h1>
 
         {erro && (

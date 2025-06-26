@@ -5,7 +5,7 @@ import DefautPage from "@/components/defautpage";
 import { getSession } from "next-auth/react";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, CalendarDays, DollarSign  } from "lucide-react";
 
 import {
   BarChart,
@@ -18,7 +18,7 @@ import {
   ComposedChart,
   Legend,
 } from "recharts";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 
 interface ObraPagamento {
   idobra: string;
@@ -41,6 +41,10 @@ export default function DashboardUnificado() {
   const [carregando, setCarregando] = useState(true);
   const [user, setUser] = useState<string | undefined>();
   const [ultimoRegistro, setUltimoRegistro] = useState<ObraPagamento | null>(null);
+
+  const totalValor = chartData.reduce((acc, cur) => acc + cur.valor, 0);
+  const totalPrevisto = chartData.reduce((acc, cur) => acc + cur.previsto, 0);
+
 
   useEffect(() => {
     const fetchDados = async () => {
@@ -113,26 +117,30 @@ export default function DashboardUnificado() {
 
   return (
     <DefautPage>
-      <section className="col-span-3 sm:col-span-10">
+      <section className="col-span-3 sm:col-span-10 px-2 pb-24">
         {carregando ? (
           <div className="flex items-center justify-center text-gray-600">
-            <Loader2 className="animate-spin w-6 h-6 mr-2" />
+            <Loader className="animate-spin w-6 h-6 mr-2" />
             Carregando dados...
+            <div className="animate-pulse space-y-4">
+            <div className="h-6 bg-gray-200 rounded w-1/2 mx-auto" />
+            <div className="h-20 bg-gray-200 rounded" />
+          </div>
           </div>
         ) : (
           <div className="p-4 space-y-4 max-w-xl mx-auto">
-            <h1 className="text-2xl font-semibold text-left">Bem-vindo, {user}</h1>
-            <p className="text-left text-sm text-gray-500">Resumo da conta</p>
+            <h1 className="text-2xl font-semibold text-left">Bem-vindo(a), {user}</h1>
+            <p className="text-left text-sm text-gray-500">Resumo da sua conta</p>
 
             <div className="grid grid-cols-2 gap-4">
               <Card>
-                <CardContent className="p-4 text-center">
+                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                   <p className="sm:text-xl text-sm text-muted-foreground">Obras ativas</p>
                   <p className="text-3xl font-bold text-[#28a9b8]">{obrasUnicas}</p>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="p-4 text-center">
+                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                   <p className="sm:text-xl text-sm text-muted-foreground">Pagamentos lançados</p>
                   <p className="text-3xl font-bold text-[#28a9b8]">{totalPagamentos}</p>
                 </CardContent>
@@ -142,7 +150,7 @@ export default function DashboardUnificado() {
             {chartData.length > 0 && (
               <>
                 <Card>
-                  <CardContent className="p-4">
+                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                     <p className="sm:text-xl text-sm text-center text-muted-foreground mb-4">
                       Resumo de pagamentos por obra
                     </p>
@@ -153,7 +161,12 @@ export default function DashboardUnificado() {
                         margin={{ top: 5, right: 110, bottom: 5, left: 40 }}
                       >
                         <XAxis type="number" hide />
-                        <YAxis dataKey="name" type="category" width={60} />
+                        <YAxis 
+                          dataKey="name"
+                          type="category"
+                          width={100}
+                          tick={{ fontSize: 11 }} // Reduz um pouco a fonte
+                        />
                         <Tooltip 
                           formatter={(value: number) =>
                             value.toLocaleString("pt-BR", {
@@ -176,17 +189,31 @@ export default function DashboardUnificado() {
                               }),
                           }}
                         />
-                        <Line name="Previsto" type="monotone" dataKey="previsto" stroke="#ff7300" />
+                        <Line
+                            name="Previsto"
+                            type="monotone"
+                            dataKey="previsto"
+                            stroke="#ff6600"
+                            strokeWidth={2}
+                          />
                         <Legend />
                       </ComposedChart>
                     </ResponsiveContainer>
+                  <p className="text-sm text-muted-foreground">
+                    Total Pagamento: <strong className="text-[#28a9b8]">{totalValor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</strong><br />
+                    Total Previsto: <strong className="text-orange-600">{totalPrevisto.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</strong>
+                  </p>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground mb-2">Último lançamento</p>
-                    <p className="text-base font-medium">
+                    <p className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                      <CalendarDays className="w-4 h-4 text-[#28a9b8]" />
+                      Último lançamento
+                    </p>
+                    <p className="text-base flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-green-600" />
                       {ultimoRegistro
                         ? `${new Date(ultimoRegistro.datapagamento).toLocaleDateString(
                             "pt-BR",

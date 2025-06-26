@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import DefautPage from "@/components/defautpage";
-import { Loader2 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { getSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { Loader } from "lucide-react";
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("pt-BR", {
@@ -130,7 +130,7 @@ const TelaAcompanhamentoPagamentos = () => {
 
   return (
     <DefautPage>
-      <section className="col-span-4 sm:col-span-8 pb-6">
+      <section className="col-span-3 sm:col-span-8 px-2 pb-24">
         <h1 className="text-3xl sm:text-2xl font-bold mb-6 text-gray-800">
           Acompanhamento de Pagamentos por Categoria
         </h1>
@@ -143,7 +143,7 @@ const TelaAcompanhamentoPagamentos = () => {
               <div className="flex flex-col w-full sm:w-auto">
                 <label className="text-sm font-medium text-gray-700 mb-1">Selecionar Obra:</label>
                 <select
-                  disabled={carregando || !!idDaURL}
+                  disabled={carregando}
                   className="border border-gray-300 px-3 py-2 rounded w-full sm:w-auto"
                   value={obraSelecionada}
                   onChange={(e) => setObraSelecionada(e.target.value)}
@@ -175,7 +175,14 @@ const TelaAcompanhamentoPagamentos = () => {
             </div>
 
             {carregando ? (
-              <p className="text-center text-gray-600 my-4">Carregando pagamentos...</p>
+              <div className="flex items-center justify-center text-gray-600">
+                <Loader className="animate-spin w-6 h-6 mr-2" />
+                Carregando pagamentos ... 
+                <div className="animate-pulse space-y-4">
+                <div className="h-6 bg-gray-200 rounded w-1/2 mx-auto" />
+                <div className="h-20 bg-gray-200 rounded" />
+              </div>
+              </div>
             ) : pagamentos.length === 0 ? (
               <p className="text-center text-gray-500 my-4">Nenhum pagamento encontrado com os filtros atuais.</p>
             ) : (

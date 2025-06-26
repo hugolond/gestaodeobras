@@ -18,10 +18,10 @@ export default function Sidebar() {
   const [elementVisibleRegisterCNPJ, setElementVisibleRegisterCNPJ] = useState(false);
   const [showSidebar, setShowSideBar] = useState(false);
 
-  const estiloicon = "size-8 text-gray-400"
+  const estiloicon = "size-8 text-gray-200"
 
   const sidebarBase =
-    "flex items-center p-2 space-x-3 rounded-md text-white hover:bg-[#28a9b8] transition-colors duration-200";
+    "flex items-center p-2 space-x-3 rounded-md text-white font-semibold hover:bg-[#28a9b8] transition-colors duration-200";
   const sidebarButton =
     "flex w-full items-center p-3 space-x-3 rounded-md text-white font-semibold text-lg hover:bg-[#28a9b8] transition-colors duration-200";
   const sidebarSpan = "flex-1 ms-3 text-left whitespace-nowrap";
@@ -78,7 +78,7 @@ export default function Sidebar() {
           {elementVisiblePedidos && (
             <ul className="py-2 space-y-2">
               <li>
-                <BoxText className={sidebarBase} link="/admin/work/detail" text="Cadastro" draw="" children/>
+                <BoxText className={sidebarBase} link="/admin/work/detail" text="Cadastrar" draw="" children/>
               </li>
               <li>
                 <BoxText className={sidebarBase} link="/admin/work/list" text="Listar" draw="" children/>
@@ -105,7 +105,7 @@ export default function Sidebar() {
           {elementVisibleShip && (
             <ul className="py-2 space-y-2">
               <li>
-                <BoxText className={sidebarBase} link="/admin/payment/detail" text="Registros" draw="" children/>
+                <BoxText className={sidebarBase} link="/admin/payment/detail" text="Registrar" draw="" children/>
               </li>
               <li>
                 <BoxText className={sidebarBase} link="/admin/payment/list" text="Listar" draw="" children/>
@@ -132,12 +132,12 @@ export default function Sidebar() {
           {elementVisibleRegisterCNPJ && (
             <ul className="py-2 space-y-2">
               <li>
-                <BoxText className={sidebarBase} link="/admin/acomp" text="Consulta" draw="" children/>
+                <BoxText className={sidebarBase} link="/admin/acomp" text="Consultar" draw="" children/>
               </li>
             </ul>
           )}
 
-          <Link href="/">
+          <Link href="/admin/settings">
             <button type="button" className={sidebarButton}>
             <AdjustmentsHorizontalIcon className= {estiloicon} />
               <span className={sidebarSpan}>Configurações</span>
