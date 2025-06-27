@@ -8,6 +8,9 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Plus, CalendarDays, DollarSign  } from "lucide-react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
 import {
   BarChart,
@@ -37,8 +40,9 @@ interface ChartItem {
   previsto: number;
 }
 
-export default function DashboardUnificado() {
-  const { data: session, status } = useSession();
+export default async function DashboardUnificado() {
+  const session = await getServerSession(authOptions);
+  const { data: status } = useSession();
   const router = useRouter();
 
   const [stats, setStats] = useState<ObraPagamento[]>([]);
@@ -50,11 +54,9 @@ export default function DashboardUnificado() {
   const totalValor = chartData.reduce((acc, cur) => acc + cur.valor, 0);
   const totalPrevisto = chartData.reduce((acc, cur) => acc + cur.previsto, 0);
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
+  if (!session) {
+    redirect("/login");
+  }
 
   useEffect(() => {
     const fetchDados = async () => {
