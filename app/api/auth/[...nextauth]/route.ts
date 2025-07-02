@@ -98,60 +98,36 @@ export const authOptions: NextAuthOptions = {
     maxAge: 4 * 60 * 60, // 4 horas
   },
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
-      const now = Math.floor(Date.now() / 1000);
-      const exp = (token as any).exp;
-
-      // Se token estiver prestes a expirar, tenta renovar
-      if (exp && exp - now < 2 * 60 * 60) {
-        try {
-          const refreshRes = await fetch(
-            `https://backendgestaoobra.onrender.com/refresh?token=${(token as any).token}`
-          );
-          const refreshData = await refreshRes.json();
-          if (refreshRes.ok && refreshData.token) {
-            const decoded = JSON.parse(
-              Buffer.from(refreshData.token.split(".")[1], "base64").toString()
-            );
-            token.token = refreshData.token;
-            token.exp = decoded.exp;
-          }
-        } catch (err) {
-          console.error("Erro ao renovar token", err);
-        }
-      }
-
+    async jwt({ token, user }) {
       if (user) {
         const decoded = JSON.parse(
-          Buffer.from((user as any).token.split(".")[1], "base64").toString()
+          Buffer.from(user.token.split(".")[1], "base64").toString()
         );
-        return {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          roles: user.roles,
-          token: user.token,
-          exp: decoded.exp,
-        };
-      }
 
-      if (trigger === "update") {
-        return { ...token, ...session.user };
+        token.id = user.id;
+        token.email = user.email;
+        token.username = user.username;
+        token.roles = Array.isArray(user.roles) ? user.roles.join(",") : user.roles;
+        token.token = user.token;
+        token.exp = decoded.exp;
       }
 
       return token;
-    },
+    }
+    ,
 
     async session({ session, token }) {
-      session.user = {
-        id: token.id as string,
-        email: token.email as string,
-        username: token.username as string,
-        roles: token.roles as string,
-      };
-      session.token = token.token as string;
-      return session;
-    },
+        session.user = {
+          id: token.id as string,
+          email: token.email as string,
+          username: token.username as string,
+          roles: token.roles as string, // ← agora é seguro pois usamos join() acima
+        };
+        session.token = token.token as string;
+        return session;
+      }
+      ,
+    
   },
   pages: {
     signIn: "/login",

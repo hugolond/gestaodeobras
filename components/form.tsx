@@ -40,9 +40,11 @@ export default function Form({ type }: { type: "login" | "register" }) {
           if (result.error) {
             setLoading(false);
             toast.error(result.error);
-          } else {
-            router.push("/admin");
           }
+          if (result?.ok) {
+            router.push('/admin'); // ✅ navega após login
+          }
+
         } else {
           const res = await fetch("/api/auth/register", {
             method: "POST",
