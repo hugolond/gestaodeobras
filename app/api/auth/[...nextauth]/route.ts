@@ -39,6 +39,17 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production',
+        path: '/',
+      }
+    }
+    },
   session: {
     strategy: "jwt",
     updateAge: 2 * 60 * 60, // 2 horas
@@ -99,6 +110,9 @@ export const authOptions: NextAuthOptions = {
       session.token = token.token as string;
       return session;
     },
+  },
+  pages: {
+    signIn: "/login",
   },
 };
 
