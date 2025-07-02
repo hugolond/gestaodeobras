@@ -30,30 +30,36 @@ export const authOptions: NextAuthOptions = {
             throw new Error(data?.error || "Falha na autenticação");
             }
 
-            // ✅ Validação de campos esperados
-            if (
-            !data?.user?.id ||
-            !data?.user?.email ||
-            !data?.token ||
-            typeof data.token !== "string" ||
-            !data.token.includes(".")
-            ) {
-            throw new Error("Dados de autenticação inválidos");
+            // ⚠️ Validação de token
+            if (!data?.token || typeof data.token !== "string" || !data.token.includes(".")) {
+            throw new Error("Token inválido ou ausente");
+            }
+
+            const user = data.user;
+
+            // ⚠️ Parse seguro de roles
+            let roles: string[] = [];
+            try {
+            roles = JSON.parse(user.roles);
+            if (!Array.isArray(roles)) roles = [user.roles];
+            } catch {
+            roles = [user.roles];
             }
 
             return {
-            id: data.user.id,
-            email: data.user.email,
-            username: data.user.username || "",
-            roles: data.user.roles || [],
+            id: user.id,
+            email: user.email,
+            username: user.username || "",
+            roles,
             token: data.token,
             };
 
-        } catch (error) {
-            console.error("Erro no authorize:", error);
-            throw new Error("Erro ao autenticar. Tente novamente.");
+        } catch (err) {
+            console.error("Erro no authorize:", err);
+            throw new Error("Erro ao autenticar. Verifique suas credenciais.");
         }
         }
+
     }),
   ],
   useSecureCookies: true, // ← Esse precisa estar ATIVO!
