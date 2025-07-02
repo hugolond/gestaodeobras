@@ -15,6 +15,7 @@ module.exports = {
         "sucess" : "var(--green-2010)"
       },
       fontFamily: {
+        sans: ["'Open Sans'", "sans-serif"],
         "h4-14-20": "var(--h4-14-20-font-family)",
         "h5r-12-18": "var(--h5r-12-18-font-family)",
       },

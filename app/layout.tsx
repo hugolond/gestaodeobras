@@ -6,7 +6,7 @@ import AuthDados from "../components/auth-dados";
 import { Suspense } from "react";
 import { Open_Sans } from "next/font/google";
 import type { Viewport } from 'next';
-import Sidebar from "./admin/sidebar";
+
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import bg from '../public/fundo.png';
 import { Providers } from "./providers"; // ✅ importa o provider

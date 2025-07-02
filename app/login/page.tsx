@@ -18,7 +18,6 @@ export default function Login() {
           <div className="bg-white rounded-lg bg-white shadow-xl">
           <Image alt="" src={logo} width="200"/>
           </div>
-          
           <p className="text-sm text-gray-200">
             Informe email e senha para continuar
           </p>

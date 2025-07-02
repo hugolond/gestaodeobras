@@ -5,7 +5,6 @@ import Head from 'next/head';
 import Link from "next/link";
 import { FaCheckCircle, FaMobileAlt, FaChartLine, FaShareAlt, FaArrowLeft, FaArrowRight, FaBook, FaPlane, FaBullhorn, FaPaypal, FaCreditCard, FaFolder } from 'react-icons/fa';
 import PlanosSection from './admin/planossection';
-import Logo from "app/assets/logo.svg";
 import Image from "next/image";
 
 export default function Home() {
@@ -111,24 +110,6 @@ export default function Home() {
     setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
   };
 
-  const planClasses = (plan: string) =>
-    `cursor-pointer bg-white rounded-lg p-6 transition border-2 ${
-      selectedPlan === plan ? 'border-gray-800' : 'border-transparent'
-    } hover:border-gray-600`;
-
-  const iniciarCheckout = async (priceId: string) => {
-    const res = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ priceId }),
-    });
-
-    const data = await res.json();
-    if (data?.url) {
-      window.location.href = data.url;
-    }
-  };
-
   return (
     <div className="bg-white text-cyan-900">
       <Head>
@@ -141,7 +122,7 @@ export default function Home() {
       <header className="bg-white px-6 py-6 shadow-md flex justify-between items-center">
         {/* Botão - visível no desktop como fixo à direita */}
         <div className="hidden md:block absolute right-6">
-          <Link href="/admin">
+          <Link href="/login">
             <button className="flex items-center gap-2 bg-cyan-800 hover:bg-cyan-900 text-white px-4 py-2 rounded-md text-sm font-medium shadow">
               Acesse agora <FaArrowRight />
             </button>
@@ -150,7 +131,7 @@ export default function Home() {
 
         {/* Botão no mobile (abaixo da logo, centralizado) */}
         <div className="block md:hidden mt-4 w-full text-center">
-          <Link href="/admin">
+          <Link href="/login">
             <button className="flex items-center bg-cyan-800 gap-2 hover:bg-cyan-900 text-white px-4 py-2 rounded-md text-sm font-medium shadow">
               Acesse agora <FaArrowRight />
             </button>
@@ -161,7 +142,7 @@ export default function Home() {
 
       <header className="bg-white px-6 py-4 shadow-md flex justify-between items-center">
         <div className="flex-1 flex justify-center">
-          <Image className="bg-white rounded-lg bg-white shadow-xl w-64 md:w-128 h-auto" priority src={Logo} alt="Logo" />
+          <Image className="bg-white rounded-lg bg-white shadow-xl w-64 md:w-128 h-auto" priority src= "/logo.svg" alt="Logo" width={256} height={64} />
         </div>  
       </header>
 
@@ -232,6 +213,7 @@ export default function Home() {
         </div>
       </section>
 
+      
      <PlanosSection onPage={false} indicados={['Essencial']}/>
       <section className="bg-white py-16 px-4 sm:px-6 text-left max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Perguntas Frequentes</h2>
@@ -245,10 +227,18 @@ export default function Home() {
               <span className="ml-4">{activeFAQ === index ? '−' : '+'}</span>
             </button>
             {activeFAQ === index && (
-              <p
-                className="mt-2 text-gray-600 transition-all"
-                dangerouslySetInnerHTML={{ __html: item.answer }}
-              />
+              <div className="mt-2 text-gray-600 transition-all">
+                {index === 6 ? (
+                  <p>
+                    Após a confirmação da assinatura será enviado um e-mail com link para o primeiro acesso. Caso não receba,{' '}
+                    <Link href="/register" className="text-[#28a9b8] underline">
+                      clique aqui para se registrar
+                    </Link>.
+                  </p>
+                ) : (
+                  <p>{item.answer}</p>
+                )}
+              </div>
             )}
           </div>
         ))}

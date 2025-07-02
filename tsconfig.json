@@ -35,6 +35,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "types": ["node"],
     "incremental": true,
     "plugins": [
       {
@@ -44,11 +45,12 @@
   },
   "include": [
     "next-env.d.ts",
+    "types/**/*.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/admin/reprocessa/reprocessa"
-  ],
+, "middleware.ts.bkp"  ],
   "exclude": [
     "node_modules"
   ]

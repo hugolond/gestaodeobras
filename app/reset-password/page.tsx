@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, FormEvent } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import DefautPage from "@/components/defautpage";
+import { Suspense } from "react";
 import toast from "react-hot-toast";
 
-export default function ResetPassword() {
+function ResetPasswordInner() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -52,47 +52,56 @@ export default function ResetPassword() {
   return (
     <div className="grid grid-cols-1 gap-4">
       <div className="grid grid-cols-3 sm:grid-cols-8 gap-4 px-4 sm:pt-4 pt-12 sm:ml-80 max-w-screen-lg">
-      <section className="col-span-3 sm:col-span-4 pb-6">
-        <h1 className="text-2xl font-semibold mb-4 text-gray-800">Redefinir Senha</h1>
+        <section className="col-span-3 sm:col-span-4 pb-6">
+          <h1 className="text-2xl font-semibold mb-4 text-gray-800">Redefinir Senha</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded shadow">
-          <div>
-            <label htmlFor="password" className="block mb-1 text-sm font-medium text-gray-700">Nova Senha</label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full border px-4 py-2 rounded"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded shadow">
+            <div>
+              <label htmlFor="password" className="block mb-1 text-sm font-medium text-gray-700">Nova Senha</label>
+              <input
+                type="password"
+                name="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full border px-4 py-2 rounded"
+              />
+            </div>
 
-          <div>
-            <label htmlFor="confirmPassword" className="block mb-1 text-sm font-medium text-gray-700">Confirmar Nova Senha</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              className="w-full border px-4 py-2 rounded"
-            />
-          </div>
+            <div>
+              <label htmlFor="confirmPassword" className="block mb-1 text-sm font-medium text-gray-700">Confirmar Nova Senha</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className="w-full border px-4 py-2 rounded"
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="buttomForm"
-          >
-            {isLoading ? "Redefinindo..." : "Redefinir Senha"}
-          </button>
-          {message && <p className="text-green-600 bg-green-100 px-4 py-2 rounded mt-4">{message}</p>}
-        </form>
-      </section>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="buttomForm"
+            >
+              {isLoading ? "Redefinindo..." : "Redefinir Senha"}
+            </button>
+            {message && <p className="text-green-600 bg-green-100 px-4 py-2 rounded mt-4">{message}</p>}
+          </form>
+        </section>
       </div>
     </div>
+  );
+}
+
+// Wrapper com Suspense
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <ResetPasswordInner />
+    </Suspense>
   );
 }

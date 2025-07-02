@@ -171,13 +171,6 @@ box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
 }
 
-@media (min-width: 640px) { 
-  padding-left: 2.5rem;
-  padding-right: 2.5rem; 
-  grid-column: span 4 / span 4; 
- }
-
-
 .tAlert{
   display: none; 
   grid-column: span 3 / span 3; 
@@ -189,4 +182,15 @@ box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.
   display: block; 
   grid-column-end: 11; 
  }
+
+ 
+
+}
+@layer utilities {
+  .bg-obra {
+    background-image: url('/fundo.png');
+    background-size: cover;
+    background-repeat: repeat;
+    background-position: center;
+  }
 }

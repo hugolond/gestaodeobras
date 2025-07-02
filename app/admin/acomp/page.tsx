@@ -1,13 +1,11 @@
 "use client";
-
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import DefautPage from "@/components/defautpage";
 import html2canvas from "html2canvas";
 import { getSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Plus } from "lucide-react";
-import { Loader } from "lucide-react";
+import { Plus, Loader } from "lucide-react";
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("pt-BR", {
@@ -34,7 +32,8 @@ type Pagamento = {
   observacao: string;
 };
 
-const TelaAcompanhamentoPagamentos = () => {
+const TelaAcompanhamentoPagamentosInner = () => {
+  
   const [obras, setObras] = useState<Obra[]>([]);
   const [obraSelecionada, setObraSelecionada] = useState("");
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
@@ -59,6 +58,7 @@ const TelaAcompanhamentoPagamentos = () => {
       link.click();
     }
   };
+
   const searchParams = useSearchParams();
   const idDaURL = searchParams.get("id") || "";
 
@@ -117,7 +117,6 @@ const TelaAcompanhamentoPagamentos = () => {
     })();
   }, [obraSelecionada]);
 
-  
   const totalGeral = Object.values(agrupados).reduce((acc, val) => acc + val, 0);
   const agrupadosOrdenados = Object.entries(agrupados).sort((a, b) => ordem === "asc" ? a[1] - b[1] : b[1] - a[1]);
   const obraSelecionadaObj = obras.find(o => o.ID === obraSelecionada);
@@ -259,4 +258,10 @@ const TelaAcompanhamentoPagamentos = () => {
   );
 };
 
-export default TelaAcompanhamentoPagamentos;
+export default function TelaAcompanhamentoPagamentosPage() {
+  return (
+    <Suspense fallback={<div>Carregando tela de pagamentos...</div>}>
+      <TelaAcompanhamentoPagamentosInner />
+    </Suspense>
+  );
+}

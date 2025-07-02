@@ -7,6 +7,7 @@ import { getSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Plus, Edit2, Save, X } from "lucide-react";
+import { Suspense } from "react";
 import { XCircleIcon } from '@heroicons/react/24/solid';
 
 
@@ -35,7 +36,7 @@ type Pagamento = {
   observacao: string;
 };
 
-export default function ListaPagamentosCompleta() {
+function ListaPagamentosCompletaInner() {
   const [obras, setObras] = useState<Obra[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [obraSelecionada, setObraSelecionada] = useState("");
@@ -309,5 +310,12 @@ export default function ListaPagamentosCompleta() {
         <span className="text-sm font-medium">Adicionar pagamento</span>
       </Link>
     </DefautPage>
+  );
+}
+export default function ListaPagamentosCompletaPage() {
+  return (
+    <Suspense fallback={<div>Carregando pagamentos...</div>}>
+      <ListaPagamentosCompletaInner />
+    </Suspense>
   );
 }
