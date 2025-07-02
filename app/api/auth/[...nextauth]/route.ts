@@ -39,7 +39,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  useSecureCookies: true, // <--- ESSENCIAL
+  useSecureCookies: true, // ← Esse precisa estar ATIVO!
   cookies: {
     sessionToken: {
       name: `__Secure-next-auth.session-token`,
@@ -48,8 +48,27 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'none',
         secure: true,
         path: '/',
-      }},
+      },
     },
+    callbackUrl: {
+      name: '__Secure-next-auth.callback-url',
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+        path: '/',
+      },
+    },
+    csrfToken: {
+      name: `_Host-next-auth.csrf-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+        path: '/',
+      },
+    },
+  },
   session: {
     strategy: "jwt",
     updateAge: 2 * 60 * 60, // 2 horas
