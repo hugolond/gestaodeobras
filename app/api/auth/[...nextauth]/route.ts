@@ -39,16 +39,16 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  useSecureCookies: true, // <--- ESSENCIAL
   cookies: {
     sessionToken: {
       name: `__Secure-next-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: 'none',
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
         path: '/',
-      }
-    }
+      }},
     },
   session: {
     strategy: "jwt",
