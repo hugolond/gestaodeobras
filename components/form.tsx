@@ -30,6 +30,19 @@ export default function Form({ type }: { type: "login" | "register" }) {
             email: e.currentTarget.email.value,
             password: e.currentTarget.password.value,
           });
+
+          console.log('Login result:', result);
+
+          if (result?.ok && !result.error) {
+            // Aguarde a sessão ser aplicada
+            setTimeout(() => {
+              router.refresh(); // força atualização do useSession
+              router.push("/admin");
+            }, 300); // tempo mínimo de sincronização
+          } else {
+            toast.error(result?.error || "Erro ao fazer login.");
+          }
+;
           console.log('Login result:', result); // 👈 isso vai ajudar muito no devtools
           if (!result) {
             setLoading(false);
