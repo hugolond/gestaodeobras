@@ -11,32 +11,49 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email e senha são obrigatórios");
+            throw new Error("Email e senha são obrigatórios");
         }
 
-        const response = await fetch("https://backendgestaoobra.onrender.com/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: credentials.email,
-            password: credentials.password,
-          }),
-        });
+        try {
+            const response = await fetch("https://backendgestaoobra.onrender.com/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+            }),
+            });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData?.error || "Falha na autenticação");
+            const data = await response.json();
+
+            if (!response.ok) {
+            throw new Error(data?.error || "Falha na autenticação");
+            }
+
+            // ✅ Validação de campos esperados
+            if (
+            !data?.user?.id ||
+            !data?.user?.email ||
+            !data?.token ||
+            typeof data.token !== "string" ||
+            !data.token.includes(".")
+            ) {
+            throw new Error("Dados de autenticação inválidos");
+            }
+
+            return {
+            id: data.user.id,
+            email: data.user.email,
+            username: data.user.username || "",
+            roles: data.user.roles || [],
+            token: data.token,
+            };
+
+        } catch (error) {
+            console.error("Erro no authorize:", error);
+            throw new Error("Erro ao autenticar. Tente novamente.");
         }
-
-        const data = await response.json();
-        return {
-          id: data.user.id,
-          email: data.user.email,
-          username: data.user.username,
-          roles: data.user.roles,
-          token: data.token,
-        };
-      },
+        }
     }),
   ],
   useSecureCookies: true, // ← Esse precisa estar ATIVO!

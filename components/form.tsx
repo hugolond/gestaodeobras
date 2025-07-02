@@ -30,7 +30,7 @@ export default function Form({ type }: { type: "login" | "register" }) {
             email: e.currentTarget.email.value,
             password: e.currentTarget.password.value,
           });
-
+          console.log('Login result:', result); // 👈 isso vai ajudar muito no devtools
           if (!result) {
             setLoading(false);
             toast.error("Erro inesperado no login.");
