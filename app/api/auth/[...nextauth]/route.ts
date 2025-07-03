@@ -2,6 +2,8 @@ import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
+  trustHost: process.env.NODE_ENV === "production",
+  useSecureCookies: process.env.NODE_ENV === "production",
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -34,7 +36,6 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  useSecureCookies: process.env.NODE_ENV === "production",
 cookies: {
   sessionToken: {
     name: process.env.NODE_ENV === "production"
