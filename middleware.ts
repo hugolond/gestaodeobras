@@ -11,10 +11,8 @@ export default async function middleware(req:NextRequest) {
     req,
     secret: process.env.NEXTAUTH_SECRET,
   });
-  console.log("SESSION:", session);
-
   if (!session && path.match("admin")) {
-    console.log("redirect pelo midde")
+    console.log("redirect pelo middleware")
     return NextResponse.redirect(new URL("/login", req.url));
   } else if (session && (path === "/login" || path === "/register")) {
     return NextResponse.redirect(new URL("/admin", req.url));

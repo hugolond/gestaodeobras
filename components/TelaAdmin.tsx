@@ -32,7 +32,7 @@ interface ChartItem {
   previsto: number;
 }
 
-export default function DashboardUnificado({ session }: any) {
+export default function TelaAdmin({ session }: any) {
   const token = session.token;
   const username = session.user.username;
 
@@ -91,7 +91,7 @@ export default function DashboardUnificado({ session }: any) {
   const alturaGrafico = chartData.length * 90;
 
   return (
-    <DefautPage>
+    <DefautPage session={session}>
       <section className="col-span-3 sm:col-span-10 px-2 pb-24">
         {carregando ? (
           <div className="flex items-center justify-center text-gray-600">

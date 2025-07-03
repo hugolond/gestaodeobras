@@ -7,12 +7,9 @@ import Link from "next/link";
 import { useState } from "react";
 import Logo from "../assets/marca.png";
 import { BoxText } from "../admin/boxText";
-
 import { DevicePhoneMobileIcon ,HomeModernIcon ,CreditCardIcon, PresentationChartBarIcon ,AdjustmentsHorizontalIcon, ChevronDoubleLeftIcon } from '@heroicons/react/24/solid'
-import { ArrowUpIcon } from "lucide-react";
 
-
-export default function Sidebar() {
+export default function Sidebar({ session }: any) {
   const [elementVisiblePedidos, setElementVisiblePedidos] = useState(false);
   const [elementVisibleShip, setElementVisibleShip] = useState(false);
   const [elementVisibleRegisterCNPJ, setElementVisibleRegisterCNPJ] = useState(false);
@@ -27,8 +24,8 @@ export default function Sidebar() {
   const sidebarSpan = "flex-1 ms-3 text-left whitespace-nowrap";
 
   return (
-    <SessionProvider>
-      <button
+      <div>
+        <button
         type="button"
         className="fixed top-4 left-4 z-50 flex items-center p-2 text-white bg-[#0D1B2A] rounded sm:hidden"
         onClick={() => setShowSideBar(!showSidebar)}
@@ -151,9 +148,9 @@ export default function Sidebar() {
         </div>
 
         <footer className="bg-[#0D1B2A] rounded-b-xl">
-          <AuthDados />
+          <AuthDados session={session}/>
         </footer>
       </aside>
-    </SessionProvider>
+      </div>
   );
 }
