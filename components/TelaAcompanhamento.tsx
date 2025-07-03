@@ -6,6 +6,7 @@ import { getSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Plus, Loader } from "lucide-react";
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString("pt-BR", {
@@ -20,6 +21,9 @@ type Obra = {
   Nome: string;
   Previsto?: string;
   Area?: string;
+  DataInicioObra: string;
+  DataFinalObra: string;
+  Status: boolean;
 };
 
 type Pagamento = {
@@ -121,7 +125,11 @@ export default function TelaAcompanhamento({ session }: any) {
   const agrupadosOrdenados = Object.entries(agrupados).sort((a, b) => ordem === "asc" ? a[1] - b[1] : b[1] - a[1]);
   const obraSelecionadaObj = obras.find(o => o.ID === obraSelecionada);
   const nomeObraSelecionada = obraSelecionadaObj?.Nome;
+  const dataFim = formatDate(new Date(obraSelecionadaObj?.DataFinalObra || Date.now())); 
+  
+  const status = obraSelecionadaObj?.Status;
   const dataAtual = formatDate(new Date());
+
   const areaObra = obraSelecionadaObj?.Area ? parseFloat(obraSelecionadaObj.Area) : 0;
   const previsto = obraSelecionadaObj?.Previsto ? parseFloat(obraSelecionadaObj.Previsto) : 0;
   const custoPorMetro = areaObra > 0 ? totalGeral / areaObra : 0;
@@ -195,10 +203,28 @@ export default function TelaAcompanhamento({ session }: any) {
                   fontFamily: "'Inter', sans-serif",
                 }}
               >
-                <div className="text-center text-sm text-gray-500 mb-4">
-                  Obra: <strong>{nomeObraSelecionada}</strong> — Data: <strong>{dataAtual}</strong>
-                </div>
-
+                {status && (
+                  <div className="text-sm text-gray-700 mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4 shadow-sm">
+                    <div className="text-gray-800">
+                      Obra: <strong>{nomeObraSelecionada}</strong> — Data:{" "}
+                      <strong>{dataAtual}</strong>
+                    </div>
+                  </div>
+                )}
+                
+                {!status && (
+                  <div className="text-sm text-gray-700 mb-4 rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <InformationCircleIcon className="h-5 w-5 text-green-600" />
+                      <span className="text-green-700 font-semibold text-sm">Concluída</span>
+                    </div>
+                    
+                    <div className="text-gray-800">
+                      Obra: <strong>{nomeObraSelecionada}</strong> — Conclusão:{" "}
+                      <strong>{dataFim}</strong>
+                    </div>
+                  </div>
+                )}
                 <ul className="divide-y divide-gray-200 text-xs sm:text-sm">
                   <li className="py-2 px-1 sm:px-2 flex justify-between font-semibold text-gray-700">
                     <span>Categoria</span>
