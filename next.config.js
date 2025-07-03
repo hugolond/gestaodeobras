@@ -6,9 +6,6 @@ const nextConfig = {
   swcMinify: true,
 };
 module.exports = {
-  devIndicators: {
-        buildActivity: false
-    },
   experimental: {
     forceSwcTransforms: true,
   },

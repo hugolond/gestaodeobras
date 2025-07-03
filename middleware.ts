@@ -6,12 +6,12 @@ export default async function middleware(req:NextRequest) {
   if (path === "/") {
     return NextResponse.next();
   }
-
+  
   const session = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
   });
-
+  console.log("SESSION:", session);
 
   if (!session && path.match("admin")) {
     console.log("redirect pelo midde")
