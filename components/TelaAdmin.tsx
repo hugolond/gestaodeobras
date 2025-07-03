@@ -42,47 +42,57 @@ export default function TelaAdmin({ session }: any) {
   const [ultimoRegistro, setUltimoRegistro] = useState<ObraPagamento | null>(null);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await fetch('https://backendgestaoobra.onrender.com/api/dashboard/obra-pagamento', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  const load = async () => {
+    try {
+      const res = await fetch('https://backendgestaoobra.onrender.com/api/dashboard/obra-pagamento', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        if (!res.ok) throw new Error('Erro ao buscar dados');
-        const data: ObraPagamento[] = await res.json();
+      if (!res.ok) throw new Error('Erro ao buscar dados');
 
-        setStats(data);
-        if (data.length > 0) {
-          const ultimo = data.reduce((latest, item) =>
-            new Date(item.datapagamento) > new Date(latest.datapagamento) ? item : latest
-          );
-          setUltimoRegistro(ultimo);
+      const data: ObraPagamento[] | null = await res.json();
 
-          const resumo = data.reduce((acc, item) => {
-            if (!acc[item.nome]) acc[item.nome] = { valor: 0, previsto: 0 };
-            acc[item.nome].valor += item.valor;
-            acc[item.nome].previsto = item.previsto;
-            return acc;
-          }, {} as Record<string, { valor: number; previsto: number }>);
-
-          const chart = Object.entries(resumo).map(([obra, valores]) => ({
-            name: obra,
-            valor: valores.valor,
-            previsto: valores.previsto,
-          }));
-
-          setChartData(chart);
-        }
-      } catch (err) {
-        console.error('Erro ao buscar dados:', err);
-      } finally {
-        setCarregando(false);
+      // ⚠️ Verifica se data é null ou vazio
+      if (!data || data.length === 0) {
+        setStats([]);
+        setChartData([]);
+        setUltimoRegistro(null);
+        return;
       }
-    };
-    load();
-  }, [token]);
+
+      setStats(data);
+
+      const ultimo = data.reduce((latest, item) =>
+        new Date(item.datapagamento) > new Date(latest.datapagamento) ? item : latest
+      );
+      setUltimoRegistro(ultimo);
+
+      const resumo = data.reduce((acc, item) => {
+        if (!acc[item.nome]) acc[item.nome] = { valor: 0, previsto: 0 };
+        acc[item.nome].valor += item.valor;
+        acc[item.nome].previsto = item.previsto;
+        return acc;
+      }, {} as Record<string, { valor: number; previsto: number }>);
+
+      const chart = Object.entries(resumo).map(([obra, valores]) => ({
+        name: obra,
+        valor: valores.valor,
+        previsto: valores.previsto,
+      }));
+
+      setChartData(chart);
+    } catch (err) {
+      console.error('Erro ao buscar dados:', err);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  load();
+}, [token]);
+
 
   const obrasUnicas = new Set(stats.map((s) => s.nome)).size;
   const totalPagamentos = stats.length;
