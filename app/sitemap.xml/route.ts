@@ -8,7 +8,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     '/login',
     '/register',
     '/controle-financeiro-obras',
-    '/gestao-de-pagamentos-construcao',
+    '/gestao-pagamento-construcao',
     '/orcamento-de-obra-online',
     '/comparativo-sistema-vs-planilha',
     '/planos',
