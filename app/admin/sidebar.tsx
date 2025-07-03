@@ -8,6 +8,7 @@ import { useState } from "react";
 import Logo from "../assets/marca.png";
 import { BoxText } from "../admin/boxText";
 import { DevicePhoneMobileIcon ,HomeModernIcon ,CreditCardIcon, PresentationChartBarIcon ,AdjustmentsHorizontalIcon, ChevronDoubleLeftIcon } from '@heroicons/react/24/solid'
+import { BookMarkedIcon, SidebarClose } from "lucide-react";
 
 export default function Sidebar({ session }: any) {
   const [elementVisiblePedidos, setElementVisiblePedidos] = useState(false);
@@ -17,11 +18,15 @@ export default function Sidebar({ session }: any) {
 
   const estiloicon = "size-8 text-gray-200"
 
+  const estiloiconClose = "size-8 text-gray-400"
+
   const sidebarBase =
     "flex items-center p-2 space-x-3 rounded-md text-white font-semibold hover:bg-[#28a9b8] transition-colors duration-200";
   const sidebarButton =
     "flex w-full items-center p-3 space-x-3 rounded-md text-white font-semibold text-lg hover:bg-[#28a9b8] transition-colors duration-200";
   const sidebarSpan = "flex-1 ms-3 text-left whitespace-nowrap";
+
+  const sidebarButtonClose = "flex w-full items-center p-3 space-x-3 rounded-md font-semibold text-lg bg-gray-300 text-gray-600 cursor-not-allowed text-white transition-colors duration-200";
 
   return (
       <div>
@@ -133,6 +138,16 @@ export default function Sidebar({ session }: any) {
               </li>
             </ul>
           )}
+
+          <button
+            type="button"
+            className={sidebarButtonClose}
+            onClick={() => {
+            }}
+          >
+            <BookMarkedIcon className= {estiloiconClose} />
+            <span className={sidebarSpan}>Diário de Obra</span>
+          </button>
 
           <Link href="/admin/settings">
             <button type="button" className={sidebarButton}>
