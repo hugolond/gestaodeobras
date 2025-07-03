@@ -31,8 +31,6 @@ export default function Form({ type }: { type: "login" | "register" }) {
             password: e.currentTarget.password.value,
           });
 
-          console.log('Login result:', result);
-
           if (result?.ok && !result.error) {
             // Aguarde a sessão ser aplicada
             setTimeout(() => {
@@ -42,8 +40,7 @@ export default function Form({ type }: { type: "login" | "register" }) {
           } else {
             toast.error(result?.error || "Erro ao fazer login.");
           }
-;
-          console.log('Login result:', result); // 👈 isso vai ajudar muito no devtools
+
           if (!result) {
             setLoading(false);
             toast.error("Erro inesperado no login.");
