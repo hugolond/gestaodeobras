@@ -51,7 +51,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/admin/reprocessa/reprocessa"
-, "middleware.ts.bkp"  ],
+, "middleware.ts"  ],
   "exclude": [
     "node_modules"
   ]

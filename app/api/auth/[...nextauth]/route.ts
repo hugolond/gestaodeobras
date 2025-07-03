@@ -5,133 +5,93 @@ export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
+      credentials: { email: { type: "email" }, password: { type: "password" } },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-            throw new Error("Email e senha são obrigatórios");
+          throw new Error("Email e senha são obrigatórios");
         }
 
-        try {
-            const response = await fetch("https://backendgestaoobra.onrender.com/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                email: credentials.email,
-                password: credentials.password,
-            }),
-            });
+        const res = await fetch("https://backendgestaoobra.onrender.com/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+        });
+        const data = await res.json();
 
-            const data = await response.json();
+        if (!res.ok || !data.token) throw new Error(data.error || "Falha no login");
 
-            if (!response.ok) {
-            throw new Error(data?.error || "Falha na autenticação");
-            }
-
-            // ⚠️ Validação de token
-            if (!data?.token || typeof data.token !== "string" || !data.token.includes(".")) {
-            throw new Error("Token inválido ou ausente");
-            }
-
-            const user = data.user;
-
-            // ⚠️ Parse seguro de roles
-            let roles: string[] = [];
-            try {
-            roles = JSON.parse(user.roles);
-            if (!Array.isArray(roles)) roles = [user.roles];
-            } catch {
-            roles = [user.roles];
-            }
-
-            return {
-            id: user.id,
-            email: user.email,
-            username: user.username || "",
-            roles,
-            token: data.token,
-            };
-
-        } catch (err) {
-            console.error("Erro no authorize:", err);
-            throw new Error("Erro ao autenticar. Verifique suas credenciais.");
-        }
-        }
-
+        const decoded = JSON.parse(Buffer.from(data.token.split(".")[1], "base64").toString());
+        return {
+          id: data.user.id,
+          email: data.user.email,
+          username: data.user.username,
+          roles: Array.isArray(data.user.roles)
+            ? data.user.roles.join(",")
+            : data.user.roles,
+          token: data.token,
+          exp: decoded.exp,
+        };
+      },
     }),
   ],
-  useSecureCookies: true, // ← Esse precisa estar ATIVO!
-  cookies: {
-    sessionToken: {
-      name: `__Secure-next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-        path: '/',
-      },
-    },
-    callbackUrl: {
-      name: '__Secure-next-auth.callback-url',
-      options: {
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-        path: '/',
-      },
-    },
-    csrfToken: {
-      name: `_Host-next-auth.csrf-token`,
-      options: {
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-        path: '/',
-      },
+  useSecureCookies: process.env.NODE_ENV === "production",
+cookies: {
+  sessionToken: {
+    name: process.env.NODE_ENV === "production"
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token",
+    options: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
     },
   },
-  session: {
-    strategy: "jwt",
-    updateAge: 2 * 60 * 60, // 2 horas
-    maxAge: 4 * 60 * 60, // 4 horas
+  callbackUrl: {
+    name: process.env.NODE_ENV === "production"
+      ? "__Secure-next-auth.callback-url"
+      : "next-auth.callback-url",
+    options: {
+      sameSite: "lax",
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+    },
   },
+  csrfToken: {
+    name: process.env.NODE_ENV === "production"
+      ? "_Host-next-auth.csrf-token"
+      : "next-auth.csrf-token",
+    options: {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+    },
+  },
+},
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        const decoded = JSON.parse(
-          Buffer.from(user.token.split(".")[1], "base64").toString()
-        );
-
         token.id = user.id;
         token.email = user.email;
         token.username = user.username;
-        token.roles = Array.isArray(user.roles) ? user.roles.join(",") : user.roles;
+        token.roles = user.roles as string[];
         token.token = user.token;
-        token.exp = decoded.exp;
+        token.exp = (user as any).exp;
       }
-
       return token;
-    }
-    ,
-
+    },
     async session({ session, token }) {
-        session.user = {
-          id: token.id as string,
-          email: token.email as string,
-          username: token.username as string,
-          roles: token.roles as string, // ← agora é seguro pois usamos join() acima
-        };
-        session.token = token.token as string;
-        return session;
-      }
-      ,
-    
+      session.user.id = token.id as string;
+      session.user.email = token.email as string;
+      session.user.username = token.username as string;
+      session.user.roles = token.roles as string;
+      session.token = token.token as string;
+      return session;
+    },
   },
-  pages: {
-    signIn: "/login",
-  },
+  pages: { signIn: "/login" },
 };
 
 const handler = NextAuth(authOptions);

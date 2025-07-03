@@ -111,7 +111,7 @@ export default function PlanosSection({ onPage = false, email, indicados = [] , 
 
 
   return (
-    <section className="bg-white py-16 px-4 sm:px-6 text-center">
+    <section id ="planos" className="bg-white py-16 px-4 sm:px-6 text-center">
       <h2 className="text-2xl font-bold text-gray-900 mb-10">
         Escolha o plano ideal para seu negócio:
       </h2>
