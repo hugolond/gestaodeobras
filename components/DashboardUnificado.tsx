@@ -15,6 +15,7 @@ import {
   ComposedChart,
   Legend,
 } from 'recharts';
+import { setuid } from "process";
 
 interface ObraPagamento {
   idobra: string;
@@ -33,11 +34,11 @@ interface ChartItem {
 
 export default function DashboardUnificado({ session }: any) {
   const token = session.token;
+  const username = session.user.username;
 
   const [stats, setStats] = useState<ObraPagamento[]>([]);
   const [chartData, setChartData] = useState<ChartItem[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [user, setUser] = useState<string | undefined>();
   const [ultimoRegistro, setUltimoRegistro] = useState<ObraPagamento | null>(null);
 
   useEffect(() => {
@@ -99,7 +100,7 @@ export default function DashboardUnificado({ session }: any) {
           </div>
         ) : (
           <div className="p-4 space-y-4 max-w-xl mx-auto">
-            <h1 className="text-2xl font-semibold text-left">Bem-vindo(a), {user}</h1>
+            <h1 className="text-2xl font-semibold text-left">Bem-vindo(a), {username}</h1>
             <p className="text-left text-sm text-gray-500">Resumo da sua conta</p>
 
             <div className="grid grid-cols-2 gap-4">

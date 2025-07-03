@@ -1,12 +1,9 @@
 import "@/styles/globals.css";
 import { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
-import AuthStatus from "../components/auth-status";
-import AuthDados from "../components/auth-dados";
 import { Suspense } from "react";
 import { Open_Sans } from "next/font/google";
 import type { Viewport } from 'next';
-
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import bg from '../public/fundo.png';
 import { Providers } from "./providers"; // ✅ importa o provider
@@ -52,7 +49,7 @@ export default async function RootLayout({
         <Toaster />
         <Providers> {/* ✅ Aqui está o SessionProvider */}
           <Suspense fallback="Carregando...">
-            <AuthStatus />
+            
           </Suspense>
           {children}
         </Providers>
