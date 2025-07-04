@@ -171,6 +171,16 @@ box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
 }
 
+.TextLph1{
+font-family: Manrope;
+font-weight: 800;
+font-style: ExtraBold;
+font-size: 56px;
+line-height: 72.8px;
+letter-spacing: 0%;
+vertical-align: middle;
+}
+
 .tAlert{
   display: none; 
   grid-column: span 3 / span 3; 

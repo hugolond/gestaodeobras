@@ -49,11 +49,11 @@ export default function Sidebar({ session }: any) {
           showSidebar ? "translate-x-0" : "-translate-x-full"
         } bg-[#0D1B2A] shadow-xl sm:translate-x-0`}
       >
-        <div className="p-6 sm:p-8">
+        <div className="px-4 sm:p-8">
           <Image className="bg-white rounded-lg bg-white shadow-xl" priority src={Logo} alt="Logo" />
         </div>
 
-        <div className="px-3 py-4 overflow-y-auto">
+        <div className="px-3 pt-4 overflow-y-auto">
           <Link href="/admin">
             <button type="button" className={sidebarButton}>
             <DevicePhoneMobileIcon className= {estiloicon} />

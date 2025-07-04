@@ -1,11 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import Head from 'next/head';
 import Link from "next/link";
-import { FaCheckCircle, FaMobileAlt, FaChartLine, FaShareAlt, FaArrowLeft, FaArrowRight, FaBook, FaPlane, FaBullhorn, FaPaypal, FaCreditCard, FaFolder } from 'react-icons/fa';
+import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
+import { FaCheckCircle, FaMobileAlt, FaChartLine, FaShareAlt, FaArrowLeft, FaArrowRight, FaBook, FaPlane, FaBullhorn, FaPaypal, FaCreditCard, FaFolder, FaQuoteRight } from 'react-icons/fa';
 import PlanosSection from './admin/planossection';
 import Image from "next/image";
+import Footer from '@/components/footer';
+import { ArrowDown01Icon, BadgeDollarSignIcon, CircleArrowDownIcon, CircleArrowUpIcon, CircleChevronDown, EyeIcon, LucideMessageSquareQuote, MoveDownIcon, Quote, QuoteIcon, ShareIcon } from 'lucide-react';
+import { ArrowDownCircleIcon, BellAlertIcon, ClipboardDocumentIcon, CogIcon, DevicePhoneMobileIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
+import { Quattrocento_Sans } from 'next/font/google';
 
 export default function Home() {
   const toggleFAQ = (index: number) => {
@@ -16,6 +24,34 @@ export default function Home() {
     const plansSection = document.getElementById('planos');
     if (plansSection) plansSection.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const slides = [
+  {
+    image: '/como1.svg',
+    title: 'Passo 1. Cadastro',
+    text: 'Cadastre-se para ter acesso o período de teste.'
+  },
+  {
+    image: '/como2.svg',
+    title: 'Passo 2. Login',
+    text: 'Realizei o login pelo email e senha cadastrado.'
+  },
+  {
+    image: '/como3.svg',
+    title: 'Passo 3. Registro da Obra',
+    text: 'Cadastre a obra com os dados mais importantes trazendo previsibilidade.'
+  },
+  {
+    image: '/como4.svg',
+    title: 'Passo 4. Registro Pagamento',
+    text: 'Registre os pagamentos organizando por tipo e data.'
+  },
+  {
+    image: '/como5.svg',
+    title: 'Passo 5. Relatórios',
+    text: 'Gere relatórios visuais e compartilhe facilmente com sua equipe ou cliente.'
+  }
+  ];
 
   const faqData = [
   {
@@ -94,6 +130,13 @@ export default function Home() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
+  const [index2, setIndex2] = useState(0);
+  const [current, setCurrent] = useState(0);
+  const visible = 3;
+  const handleBulletClick = (i: number) => setCurrent(i);
+  const [index, setIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -101,6 +144,21 @@ export default function Home() {
     }, 10000);
     return () => clearInterval(interval);
   }, [testimonials.length]);
+
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    const scrollLeft = containerRef.current.scrollLeft;
+    const slideWidth = containerRef.current.offsetWidth;
+    const newIndex = Math.round(scrollLeft / slideWidth);
+    if (newIndex !== index) setIndex(newIndex);
+  };
+
+   useEffect(() => {
+    const ref = containerRef.current;
+    if (!ref) return;
+    ref.addEventListener('scroll', handleScroll, { passive: true });
+    return () => ref.removeEventListener('scroll', handleScroll);
+  }, [index2]);
 
   const handlePrev = () => {
     setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
@@ -115,134 +173,298 @@ export default function Home() {
       <Head>
         <title>Gestão Obra Fácil</title>
       </Head>
+
+      <header className="w-full bg-white border-b shadow-sm font-manrope">
+  <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    {/* Logo */}
+    <Link href="/" className="flex items-center gap-2">
+      <Image src="/logo_hd.svg" alt="Logo" width={120} height={26} />
+    </Link>
+
+    {/* Botão "Entrar" */}
+    <Link
+      href="/login"
+      className="flex items-center gap-1 text-sm font-medium text-gray-800 hover:text-indigo-600 transition"
+    >
+      <PersonOutlineIcon className="h-4 w-4" /> Entrar
+    </Link>
+  </div>
+
+  {/* Navegação responsiva */}
+  <nav className="w-full border-t overflow-x-auto">
+    <ul className="flex justify-start sm:justify-center gap-4 sm:gap-6 px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+      <li><Link href="#">Institucional</Link></li>
+      <li><Link href="#">Política</Link></li>
+      <li><Link href="#">Conta</Link></li>
+      <li><Link href="#">Atendimento</Link></li>
+      <li><Link href="/planos">Planos</Link></li>
+    </ul>
+  </nav>
+</header>
+
       {/* Banner topo com logo */}
-      <div className="bg-cyan-800 text-white text-center py-2 px-4 text-sm">
-        Promoção especial: Teste grátis por 15 dias!
-      </div>
-      <header className="bg-white px-6 py-6 shadow-md flex justify-between items-center">
-        {/* Botão - visível no desktop como fixo à direita */}
-        <div className="hidden md:block absolute right-6">
-          <Link href="/login">
-            <button className="flex items-center gap-2 bg-cyan-800 hover:bg-cyan-900 text-white px-4 py-2 rounded-md text-sm font-medium shadow">
-              Acesse agora <FaArrowRight />
+      <section className="relative bg-gradient-to-tr from-violet-50 via-indigo-50 to-fuchsia-100 text-white pt-20 px-4 overflow-hidden font-sans">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
+        <div className="md:max-w-xl z-10">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight text-black font-manrope">
+            Controle os pagamentos da sua obra em um só lugar
+          </h1>
+          <p className="text-md md:text-lg text-gray-800 mb-6 font-medium font-manrope">
+            Gestão simples e ágil, sem complicações nem planilhas.
+          </p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
+            <button onClick={scrollToPlans} className="bg-[#6366F1] rounded-xl hover:bg-blue-700 text-white px-6 py-3 font-semibold ">
+              Ver planos →
             </button>
-          </Link>
-        </div>
-
-        {/* Botão no mobile (abaixo da logo, centralizado) */}
-        <div className="block md:hidden mt-4 w-full text-center">
-          <Link href="/login">
-            <button className="flex items-center bg-cyan-800 gap-2 hover:bg-cyan-900 text-white px-4 py-2 rounded-md text-sm font-medium shadow">
-              Acesse agora <FaArrowRight />
-            </button>
-          </Link>
-        </div>
-      </header>
-
-
-      <header className="bg-white px-6 py-4 shadow-md flex justify-between items-center">
-        <div className="flex-1 flex justify-center">
-          <Image className="bg-white rounded-lg bg-white shadow-xl w-64 md:w-128 h-auto" priority src= "/logo.svg" alt="Logo" width={256} height={64} />
-        </div>  
-      </header>
-
-    
-      <section className="bg-gray-50 py-16 px-4 sm:px-6 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold text-cyan-900 mb-4">
-          Controle os pagamentos da sua obra em um só lugar
-        </h1>
-        <p className="text-base sm:text-lg mb-6">
-          Simples, rápido e sem planilhas.
-        </p>
-        <div>
-          <button onClick={scrollToPlans} className="inline-block bg-gray-800 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-gray-900 transition">
-            Ver planos
-          </button>
-        </div>
-        <p className="text-sm mt-4">+100 construtores já organizam suas obras com mais controle.</p>
-      </section>
-
-      <section className="bg-white py-12 px-4 sm:px-6 text-center">
-        <h2 className="text-2xl font-bold text-cyan-900 mb-6">
-          Feito para quem vive o dia a dia da obra:
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          <ul className="text-left space-y-3">
-            <li className="flex items-center gap-2"><FaCheckCircle className="text-gray-800" /> Acompanhe entradas e saídas em tempo real</li>
-            <li className="flex items-center gap-2"><FaChartLine className="text-gray-800" /> Tenha relatórios simples e visuais</li>
-            <li className="flex items-center gap-2"><FaFolder className="text-gray-800" /> Evite retrabalho e perda de notas</li>
-            <li className="flex items-center gap-2"><FaCreditCard className="text-gray-800" /> Vários planos para melhor encaixar</li>
-          </ul>
-          <ul className="text-left space-y-3">
-            <li className="flex items-center gap-2"><FaMobileAlt className="text-gray-800" /> Funciona no celular e no computador</li>
-            <li className="flex items-center gap-2"><FaChartLine className="text-gray-800" /> Alertas e relatórios automáticos</li>
-            <li className="flex items-center gap-2"><FaShareAlt className="text-gray-800" /> Compartilhamento fácil com sua equipe</li>
-            <li className="flex items-center gap-2"><FaBook className="text-gray-800" /> Diário de obra para registar seu dia a dia</li>
-          </ul>
-        </div>
-      </section>
-
-      <section className="bg-gray-100 py-12 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto relative text-center">
-          <h2 className="text-2xl font-bold text-cyan-900 mb-6">O que dizem nossos usuários:</h2>
-          <div className="flex items-center justify-center gap-4 relative">
-            <button onClick={handlePrev} className="absolute left-0 p-2 bg-white border rounded-full hover:bg-gray-200">
-              <FaArrowLeft />
-            </button>
-            <div className="transition-all duration-700 ease-in-out mx-10 min-h-[100px]">
-              <blockquote className="text-lg italic text-gray-900">{testimonials[currentTestimonial].text}</blockquote>
-              <p className="text-sm font-semibold mt-2 text-gray-900">{testimonials[currentTestimonial].author}</p>
-              <p className="text-sm font-semibold text-gray-900">{testimonials[currentTestimonial].city}</p>
-            </div>
-            <button onClick={handleNext} className="absolute right-0 p-2 bg-white border rounded-full hover:bg-gray-200">
-              <FaArrowRight />
-            </button>
+            
           </div>
-          <div className="flex justify-center gap-2 mt-6">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentTestimonial(index)}
-                className={`h-2 w-2 rounded-full transition-colors duration-300 ${
-                  currentTestimonial === index ? 'bg-gray-800' : 'bg-gray-400'
-                }`}
-                aria-label={`Ir para depoimento ${index + 1}`}
-              ></button>
+          <div className="flex items-center gap-2 text-gray-500 px-6 py-3 font-semibold">
+            <ExpandCircleDownIcon width={64} height={64} className="text-gray-400" />
+            <span>Descubra mais</span>
+          </div>
+          
+        </div>
+        <div className="mt-10 md:mt-0 md:ml-10 z-10">
+          <Image
+            src="/tela_lp.svg"
+            alt="App Screenshot"
+            width={400}
+            height={600}
+            className="rounded-xl"
+          />
+        </div>
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white opacity-40 pointer-events-none" />
+    </section>
+
+    <section className="bg-white py-20 px-4 font-sans">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
+        {/* Imagem esquerda */}
+        <div className="w-full md:w-1/2 hidden md:flex">
+          <Image
+            src="/tela_lp2.svg" 
+            alt="App Screenshot"
+            width={500}
+            height={500}
+            className="mx-auto"
+          />
+        </div>
+
+        {/* Texto + recursos */}
+        <div className="w-full md:w-1/2">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 font-manrope">
+            Feito para quem vive o dia a dia de obra
+          </h2>
+          <p className="text-gray-700 mb-8">
+            Quem vive o dia a dia de obra não tem tempo a perder. Por isso, criamos uma ferramenta que descomplica a gestão e te ajuda a manter tudo no controle.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 font-manrope">
+            {[
+              {
+                icon: <ClipboardDocumentIcon className="w-6 h-6 text-purple-500 " />, title: 'Acompanhamento', desc: 'Acompanhe entradas e saídas em tempo real.'
+              },
+              {
+                icon: <DevicePhoneMobileIcon className="w-6 h-6 text-purple-500" />, title: 'Acessibilidade', desc: 'Funciona no celular ou no computador.'
+              },
+              {
+                icon: <DocumentTextIcon className="w-6 h-6 text-purple-500" />, title: 'Relatórios', desc: 'Tenha acesso a relatórios simples e visuais.'
+              },
+              {
+                icon: <BellAlertIcon className="w-6 h-6 text-purple-500" />, title: 'Notificações', desc: 'Contém alertas e relatórios automatizados.'
+              },
+              {
+                icon: <EyeIcon className="w-6 h-6 text-purple-500" />, title: 'Documentação', desc: 'Evite retrabalho e perda de notas fiscais.'
+              },
+              {
+                icon: <ShareIcon className="w-6 h-6 text-purple-500" />, title: 'Compartilhamento', desc: 'Compartilhamento fácil com a sua equipe.'
+              }
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-start gap-4">
+                <div className="bg-purple-100 p-2 rounded-xl">
+                  {item.icon}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">{item.title}</h3>
+                  <p className="text-sm text-gray-600">{item.desc}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+
+      
+
+    <section className="bg-gradient-to-tr from-fuchsia-50 via-indigo-50 to-violet-100 py-20 px-4 text-center font-manrope">
+      <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-12">
+        Saiba como funciona
+      </h2>
+
+      {/* Carrossel scrollável */}
+      <div
+        ref={containerRef}
+        className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar justify-start md:justify-center gap-4 md:gap-8 px-2 md:px-0 mb-8"
+        style={{ scrollSnapType: 'x mandatory' }}
+      >
+        {slides.map((slide, i) => (
+          <div
+            key={i}
+            className="flex-shrink-0 w-full max-w-xs md:max-w-sm snap-center transition-all duration-300"
+            onClick={() => setIndex(i)}
+          >
+            <Image
+              src={slide.image}
+              alt={slide.title}
+              width={280}
+              height={360}
+              className={`rounded-xl mx-auto ${
+                i === index ? 'scale-100 opacity-100' : 'opacity-50'
+              } transition-all`}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Texto explicativo que muda conforme o scroll */}
+      <div className="text-center max-w-xl mx-auto mb-6">
+        <h3 className="font-semibold text-lg text-gray-900 mb-2">{slides[index]?.title}</h3>
+        <p className="text-gray-600 text-sm">{slides[index]?.text}</p>
+      </div>
+
+      {/* Bullets visíveis apenas em telas maiores */}
+      <div className="hidden md:flex justify-center gap-4">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              const ref = containerRef.current;
+              if (ref) {
+                ref.scrollTo({
+                  left: i * ref.offsetWidth,
+                  behavior: 'smooth',
+                });
+              }
+            }}
+            className={`w-3 h-3 rounded-full ${index === i ? 'bg-indigo-600' : 'bg-gray-300'}`}
+            aria-label={`Ir para slide ${i + 1}`}
+          />
+        ))}
+      </div>
+    </section>
+
+
+    <div className="h-1 w-1/2 bg-violet-500 rounded-full" />
+
+    <section className="bg-white py-20 px-4 font-sans">
+      <h2 className="text-3xl md:text-4xl font-extrabold text-center text-gray-900 mb-12">
+        Depoimentos de nossos clientes
+      </h2>
+
+      <div className="max-w-6xl mx-auto overflow-x-auto">
+        <div
+          className="flex transition-transform duration-500 ease-in-out min-w-[100%]"
+          style={{ transform: `translateX(-${current * (100 / visible)}%)`, width: `${(testimonials.length / visible) * 100}%` }}
+        >
+          {testimonials.map((item, index) => (
+            <div
+              key={index}
+              className="bg-white border border-gray-200 rounded-xl shadow-md p-6 w-full max-w-[320px] sm:w-[300px] flex-shrink-0 mx-auto sm:mx-2"
+            >
+              <div className="relative">
+                <div className="absolute -top-6 -left-3">
+                  <div className="bg-indigo-500 w-8 h-8 rounded-md flex items-center justify-center">
+                    <span className="text-white text-xl font-bold"><FaQuoteRight/></span>
+                  </div>
+                </div>
+                <p className="text-gray-700 text-sm pt-4 leading-relaxed">{item.text}</p>
+              </div>
+              <div className="mt-4 flex items-center gap-3">
+                <Image
+                  src="/46-avatar.svg"
+                  alt="Avatar"
+                  width={48}
+                  height={48}
+                  className="rounded-full"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">{item.author}</p>
+                  <p className="text-xs text-gray-500">• {item.city}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Bullets */}
+        <div className="hidden sm:flex justify-center gap-2 mt-8">
+          {testimonials.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => handleBulletClick(i)}
+              className={`w-3 h-3 rounded-full transition-colors ${i === current ? 'bg-indigo-600' : 'bg-gray-300'}`}
+              aria-label={`Ver slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  
+    
+      
+
+      
+
+      
 
       
      <PlanosSection onPage={false} indicados={['Essencial']}/>
-      <section className="bg-white py-16 px-4 sm:px-6 text-left max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Perguntas Frequentes</h2>
-        {faqData.map((item, index) => (
-          <div key={index} className="border-b border-gray-200 py-4">
-            <button
-              onClick={() => toggleFAQ(index)}
-              className="w-full flex justify-between items-center text-left font-medium text-gray-800 text-lg"
-            >
-              {item.question}
-              <span className="ml-4">{activeFAQ === index ? '−' : '+'}</span>
-            </button>
-            {activeFAQ === index && (
-              <div className="mt-2 text-gray-600 transition-all">
-                {index === 6 ? (
-                  <p>
-                    Após a confirmação da assinatura será enviado um e-mail com link para o primeiro acesso. Caso não receba,{' '}
-                    <Link href="/register" className="text-[#28a9b8] underline">
-                      clique aqui para se registrar
-                    </Link>.
-                  </p>
+      <section className="bg-white py-20 px-4 sm:px-6 max-w-4xl mx-auto font-sans">
+      <h2 className="text-2xl md:text-3xl font-extrabold text-center text-gray-900 mb-4">
+        <p>
+          Dúvidas Frequentes 
+        </p>
+        Tudo que você precisa saber sobre nossa solução
+      </h2>
+      <p className="text-center text-gray-500 mb-10">
+        Respostas claras e rápidas para as perguntas que mais recebemos, para facilitar sua experiência.
+      </p>
+
+      <div className="divide-y divide-gray-200 rounded-xl border border-gray-200 overflow-hidden">
+        {faqData.map((item, index) => {
+          const isOpen = activeFAQ === index;
+          return (
+            <div key={index} className="bg-white">
+              <button
+                onClick={() => toggleFAQ(index)}
+                className="w-full flex justify-between items-center p-6 text-left font-medium text-gray-900 hover:bg-gray-50 transition"
+              >
+                <span>{item.question}</span>
+                {isOpen ? (
+                   <KeyboardArrowUpIcon sx={{ color: 'indigo'}}/>
                 ) : (
-                  <p>{item.answer}</p>
+                  <ExpandCircleDownIcon color="action"/>
                 )}
-              </div>
-            )}
-          </div>
-        ))}
-      </section>
+              </button>
+              {isOpen && (
+                <div className="px-6 pb-6 text-gray-600 text-sm">
+                  {item.answer === 'custom-link' ? (
+                    <p>
+                      Após a confirmação da assinatura será enviado um e-mail com link para o primeiro acesso. Caso não receba,{' '}
+                      <Link href="/register" className="text-indigo-500 underline">clique aqui para se registrar</Link>.
+                    </p>
+                  ) : (
+                    <p>{item.answer}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+    <Footer/>
     </div>
   );
 }

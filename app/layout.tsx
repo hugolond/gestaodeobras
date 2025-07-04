@@ -5,24 +5,15 @@ import { Suspense } from "react";
 import { Open_Sans } from "next/font/google";
 import type { Viewport } from 'next';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
-import bg from '../public/fundo.png';
-import { Providers } from "./providers"; // ✅ importa o provider
-
-const styling = {
-  backgroundImage: `url('${bg.src}')`,
-  backgroundSize: 'cover',
-  backgroundRepeat: 'repeat',
-  backgroundPosition: '100%',
-  height: '100vh'
-};
+import { Providers } from "./providers";
+import BodyWrapper from "../components/BodyWrapper";
 
 const roboto = Open_Sans({ weight: "400", subsets: ["latin"] });
 
 const title = "Gestão Obra Fácil";
-const description =
-  "Seu controle de obra no dia a dia. Gerenciador financeiro para pagamentos completo para controle de obras.";
+const description = "Seu controle de obra no dia a dia. Gerenciador financeiro para pagamentos completo para controle de obras.";
 
-export const metadata = {
+export const metadata: Metadata = {
   title,
   description,
   twitter: {
@@ -37,21 +28,15 @@ export const viewport: Viewport = {
   themeColor: 'black',
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-br">
-      <body className={roboto.className} style={styling}>
+      <body className={roboto.className}>
         <GoogleAnalytics />
         <Toaster />
-        <Providers> {/* ✅ Aqui está o SessionProvider */}
-          <Suspense fallback="Carregando...">
-            
-          </Suspense>
-          {children}
+        <Providers>
+          <Suspense fallback="Carregando..." />
+          <BodyWrapper>{children}</BodyWrapper>
         </Providers>
       </body>
     </html>
