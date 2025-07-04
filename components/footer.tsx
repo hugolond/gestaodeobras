@@ -38,7 +38,7 @@ const FooterSection = ({ title, links }: { title: string; links: LinkItem[] }) =
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 text-gray-700 text-sm border-t mt-16 font-manrope">
+    <footer className="bg-gray-100 text-gray-700 text-sm border-t sm:mt-16 font-manrope uppercase">
       {/* Mobile – Accordion */}
       <div className="px-4 py-6 sm:hidden">
         <FooterSection
@@ -48,7 +48,8 @@ export default function Footer() {
             { label: 'Trabalhe conosco', href: '/trabalhe-conosco' },
             { label: 'Seja um cliente', href: '/seja-cliente' },
             { label: 'Nossos sistemas', href: '/sistemas' },
-          ]}
+          ]
+        }
         />
         <FooterSection
           title="Política"
@@ -79,8 +80,8 @@ export default function Footer() {
       {/* Desktop – Grid layout */}
       <div className="max-w-7xl mx-auto px-6 py-10 hidden sm:grid grid-cols-2 md:grid-cols-5 gap-6">
         <div>
-          <h4 className="font-semibold text-gray-800 mb-2">Institucional</h4>
-          <ul className="space-y-1">
+          <h4 className="font-semibold text-gray-800 mb-2 uppercase">Institucional</h4>
+          <ul className="space-y-1 uppercase">
             <li><a href="/sobre" className="hover:underline">Quem somos</a></li>
             <li><a href="/trabalhe-conosco" className="hover:underline">Trabalhe conosco</a></li>
             <li><a href="/seja-cliente" className="hover:underline">Seja um cliente</a></li>

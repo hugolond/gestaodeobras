@@ -6,6 +6,7 @@ import Link from "next/link";
 import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
 import { FaCheckCircle, FaMobileAlt, FaChartLine, FaShareAlt, FaArrowLeft, FaArrowRight, FaBook, FaPlane, FaBullhorn, FaPaypal, FaCreditCard, FaFolder, FaQuoteRight } from 'react-icons/fa';
 import PlanosSection from './admin/planossection';
@@ -138,12 +139,25 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
 
 
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
     }, 10000);
     return () => clearInterval(interval);
   }, [testimonials.length]);
+
+  const scrollByAmount = 300; // px
+
+  const handleScrollMobile = (direction: 'left' | 'right') => {
+    const ref = containerRef.current;
+    if (ref) {
+      ref.scrollBy({
+        left: direction === 'left' ? -scrollByAmount : scrollByAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -175,67 +189,79 @@ export default function Home() {
       </Head>
 
       <header className="w-full bg-white border-b shadow-sm font-manrope">
-  <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-    {/* Logo */}
-    <Link href="/" className="flex items-center gap-2">
-      <Image src="/logo_hd.svg" alt="Logo" width={120} height={26} />
-    </Link>
+      <div className="relative max-w-7xl mx-auto px-4 py-3 flex items-center justify-center sm:justify-between">
+        {/* Logo centralizada no mobile, alinhada à esquerda no desktop */}
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/logo_hd.svg" alt="Logo" width={120} height={26} />
+        </Link>
 
-    {/* Botão "Entrar" */}
-    <Link
-      href="/login"
-      className="flex items-center gap-1 text-sm font-medium text-gray-800 hover:text-indigo-600 transition"
-    >
-      <PersonOutlineIcon className="h-4 w-4" /> Entrar
-    </Link>
-  </div>
-
-  {/* Navegação responsiva */}
-  <nav className="w-full border-t overflow-x-auto">
-    <ul className="flex justify-start sm:justify-center gap-4 sm:gap-6 px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
-      <li><Link href="#">Institucional</Link></li>
-      <li><Link href="#">Política</Link></li>
-      <li><Link href="#">Conta</Link></li>
-      <li><Link href="#">Atendimento</Link></li>
-      <li><Link href="/planos">Planos</Link></li>
-    </ul>
-  </nav>
-</header>
-
-      {/* Banner topo com logo */}
-      <section className="relative bg-gradient-to-tr from-violet-50 via-indigo-50 to-fuchsia-100 text-white pt-20 px-4 overflow-hidden font-sans">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
-        <div className="md:max-w-xl z-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight text-black font-manrope">
-            Controle os pagamentos da sua obra em um só lugar
-          </h1>
-          <p className="text-md md:text-lg text-gray-800 mb-6 font-medium font-manrope">
-            Gestão simples e ágil, sem complicações nem planilhas.
-          </p>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
-            <button onClick={scrollToPlans} className="bg-[#6366F1] rounded-xl hover:bg-blue-700 text-white px-6 py-3 font-semibold ">
-              Ver planos →
-            </button>
-            
-          </div>
-          <div className="flex items-center gap-2 text-gray-500 px-6 py-3 font-semibold">
-            <ExpandCircleDownIcon width={64} height={64} className="text-gray-400" />
-            <span>Descubra mais</span>
-          </div>
-          
-        </div>
-        <div className="mt-10 md:mt-0 md:ml-10 z-10">
-          <Image
-            src="/tela_lp.svg"
-            alt="App Screenshot"
-            width={400}
-            height={600}
-            className="rounded-xl"
-          />
-        </div>
+        {/* Botão "Entrar" visível à direita no mobile com position absolute */}
+        <Link
+          href="/login"
+          className="absolute right-4 sm:static flex items-center gap-1 text-sm font-medium text-gray-800 hover:text-indigo-600 transition"
+        >
+          <PersonOutlineIcon className="h-4 w-4" /> Entrar
+        </Link>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white opacity-40 pointer-events-none" />
-    </section>
+
+
+        {/* Navegação responsiva */}
+        <nav className="hidden sm:flex w-full border-t overflow-x-auto">
+          <div className="max-w-7xl mx-auto w-full">
+            <ul className="flex justify-center gap-4 sm:gap-6 px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+              <li><Link href="#">Institucional</Link></li>
+              <li><Link href="#">Política</Link></li>
+              <li><Link href="#">Conta</Link></li>
+              <li><Link href="#">Atendimento</Link></li>
+              <li><Link href="/planos">Planos</Link></li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+
+      <section className="relative bg-gradient-to-tr from-violet-50 via-indigo-50 to-fuchsia-100 text-white pt-20 px-4 overflow-hidden font-sans">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
+            
+            <div className="md:max-w-xl z-10 w-full sm:text-left text-center">
+              <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight text-black font-manrope">
+                Controle os pagamentos da sua obra em um só lugar
+              </h1>
+              <p className="text-md md:text-lg text-gray-800 mb-6 font-medium font-manrope">
+                Gestão simples e ágil, sem complicações nem planilhas.
+              </p>
+
+              {/* Botão visível só no desktop */}
+              <div className="w-full sm:flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
+                <button
+                  onClick={scrollToPlans}
+                  className="bg-[#6366F1] rounded-xl hover:bg-blue-700 text-white px-6 py-3 font-semibold"
+                >
+                  Ver planos →
+                </button>
+              </div>
+
+              {/* "Descubra mais" visível só no desktop */}
+              <div className="hidden sm:flex items-center gap-2 text-gray-500 px-6 py-3 font-semibold">
+                <ExpandCircleDownIcon width={64} height={64} className="text-gray-400" />
+                <span>Descubra mais</span>
+              </div>
+            </div>
+
+            <div className="mt-10 md:mt-0 md:ml-10 z-10">
+              <Image
+                src="/tela_lp.svg"
+                alt="App Screenshot"
+                width={400}
+                height={600}
+                className="rounded-xl"
+              />
+            </div>
+          </div>
+
+          {/* overlay visual */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white opacity-40 pointer-events-none" />
+        </section>
+
 
     <section className="bg-white py-20 px-4 font-sans">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
@@ -251,11 +277,11 @@ export default function Home() {
         </div>
 
         {/* Texto + recursos */}
-        <div className="w-full md:w-1/2">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 font-manrope">
+        <div className="w-full md:w-1/2 px-4">
+          <h2 className="text-center sm:flex text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 font-manrope">
             Feito para quem vive o dia a dia de obra
           </h2>
-          <p className="text-gray-700 mb-8">
+          <p className="text-center sm:text-left text-gray-700 mb-8">
             Quem vive o dia a dia de obra não tem tempo a perder. Por isso, criamos uma ferramenta que descomplica a gestão e te ajuda a manter tudo no controle.
           </p>
 
@@ -302,57 +328,91 @@ export default function Home() {
         Saiba como funciona
       </h2>
 
-      {/* Carrossel scrollável */}
-      <div
-        ref={containerRef}
-        className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar justify-start md:justify-center gap-4 md:gap-8 px-2 md:px-0 mb-8"
-        style={{ scrollSnapType: 'x mandatory' }}
-      >
-        {slides.map((slide, i) => (
-          <div
-            key={i}
-            className="flex-shrink-0 w-full max-w-xs md:max-w-sm snap-center transition-all duration-300"
-            onClick={() => setIndex(i)}
-          >
-            <Image
-              src={slide.image}
-              alt={slide.title}
-              width={280}
-              height={360}
-              className={`rounded-xl mx-auto ${
-                i === index ? 'scale-100 opacity-100' : 'opacity-50'
-              } transition-all`}
-            />
+      {/* MOBILE: com setas e carrossel */}
+      <div className="relative md:hidden mb-8">
+        {/* SETA ESQUERDA */}
+        <button
+          onClick={() => handleScrollMobile('left')}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10"
+          aria-label="Voltar"
+        >
+          <div className="bg-white/80 backdrop-blur-sm rounded-full shadow p-2">
+            <ChevronLeft className="w-5 h-5 text-gray-500" />
           </div>
-        ))}
+        </button>
+
+        {/* SETA DIREITA */}
+        <button
+          onClick={() => handleScrollMobile('right')}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10"
+          aria-label="Avançar"
+        >
+          <div className="bg-white/80 backdrop-blur-sm rounded-full shadow p-2">
+            <ChevronRight className="w-5 h-5 text-gray-500" />
+          </div>
+        </button>
+
+        {/* CARROSSEL MOBILE */}
+        <div
+          ref={containerRef}
+          className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar justify-start gap-4 px-2"
+          style={{ scrollSnapType: 'x mandatory' }}
+        >
+          {slides.map((slide, i) => (
+            <div
+              key={i}
+              className="flex-shrink-0 w-full max-w-xs snap-center transition-all duration-300"
+              onClick={() => setIndex(i)}
+            >
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className={`rounded-xl mx-auto ${
+                  i === index ? 'scale-100 opacity-100' : 'opacity-50'
+                } transition-all`}
+                width={280}
+                height={360}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Texto explicativo que muda conforme o scroll */}
+
+      {/* DESKTOP: um slide centralizado, muda via bullet */}
+      <div className="hidden md:block mb-8">
+        <div className="flex justify-center">
+          <Image
+            src={slides[index]?.image}
+            alt={slides[index]?.title}
+            width={480}
+            height={360}
+            className="rounded-xl transition-all duration-300 mx-auto"
+          />
+        </div>
+      </div>
+
+      {/* Texto explicativo */}
       <div className="text-center max-w-xl mx-auto mb-6">
         <h3 className="font-semibold text-lg text-gray-900 mb-2">{slides[index]?.title}</h3>
         <p className="text-gray-600 text-sm">{slides[index]?.text}</p>
       </div>
 
-      {/* Bullets visíveis apenas em telas maiores */}
+      {/* Bullets visíveis no desktop */}
       <div className="hidden md:flex justify-center gap-4">
         {slides.map((_, i) => (
           <button
             key={i}
-            onClick={() => {
-              const ref = containerRef.current;
-              if (ref) {
-                ref.scrollTo({
-                  left: i * ref.offsetWidth,
-                  behavior: 'smooth',
-                });
-              }
-            }}
-            className={`w-3 h-3 rounded-full ${index === i ? 'bg-indigo-600' : 'bg-gray-300'}`}
+            onClick={() => setIndex(i)}
+            className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+              index === i ? 'bg-indigo-600' : 'bg-gray-300'
+            }`}
             aria-label={`Ir para slide ${i + 1}`}
           />
         ))}
       </div>
     </section>
+
 
 
     <div className="h-1 w-1/2 bg-violet-500 rounded-full" />
@@ -411,15 +471,9 @@ export default function Home() {
       </div>
     </section>
   
-    
-      
+    <div className="h-1 w-1/3 bg-violet-500 rounded-full" />
 
-      
-
-      
-
-      
-     <PlanosSection onPage={false} indicados={['Essencial']}/>
+    <PlanosSection onPage={false} indicados={['Essencial']}/>
       <section className="bg-white py-20 px-4 sm:px-6 max-w-4xl mx-auto font-sans">
       <h2 className="text-2xl md:text-3xl font-extrabold text-center text-gray-900 mb-4">
         <p>

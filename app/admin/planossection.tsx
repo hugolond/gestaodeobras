@@ -135,9 +135,8 @@ export default function PlanosSection({ onPage = false, email, indicados = [] , 
           return (
             <div
             key={plano.nome}
-            className={`relative border rounded-xl p-6 flex flex-col justify-between text-center h-full border-[#6366F159] shadow-md shadow-[0px_4px_6px_0px_rgba(99,_102,_241,_0.9)]
+            className={`relative border rounded-xl p-6 flex flex-col justify-between text-center h-full border-[#6366F159] shadow-[0px_4px_6px_0px_rgba(99,_102,_241,_0.9)]
               ${plano.nome === planoAtivo ? 'border-green-600 ring-2 ring-green-400' : ''} 
-
             `}
             >
               {isIndicado && plano.nome !== planoAtivo && (
