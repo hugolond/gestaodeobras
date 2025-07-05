@@ -15,6 +15,7 @@ import Footer from '@/components/footer';
 import { ArrowDown01Icon, BadgeDollarSignIcon, CircleArrowDownIcon, CircleArrowUpIcon, CircleChevronDown, EyeIcon, LucideMessageSquareQuote, MoveDownIcon, Quote, QuoteIcon, ShareIcon } from 'lucide-react';
 import { ArrowDownCircleIcon, BellAlertIcon, ClipboardDocumentIcon, CogIcon, DevicePhoneMobileIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
 import { Quattrocento_Sans } from 'next/font/google';
+import Testimonials from '@/components/testimonials';
 
 export default function Home() {
   const toggleFAQ = (index: number) => {
@@ -128,24 +129,19 @@ export default function Home() {
     }
   ];
 
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
   const [index2, setIndex2] = useState(0);
-  const [current, setCurrent] = useState(0);
-  const visible = 3;
-  const handleBulletClick = (i: number) => setCurrent(i);
+
+  
+  
   const [index, setIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
 
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [testimonials.length]);
+  
 
   const scrollByAmount = 300; // px
 
@@ -173,14 +169,6 @@ export default function Home() {
     ref.addEventListener('scroll', handleScroll, { passive: true });
     return () => ref.removeEventListener('scroll', handleScroll);
   }, [index2]);
-
-  const handlePrev = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-
-  const handleNext = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
 
   return (
     <div className="bg-white text-cyan-900">
@@ -417,59 +405,7 @@ export default function Home() {
 
     <div className="h-1 w-1/2 bg-violet-500 rounded-full" />
 
-    <section className="bg-white py-20 px-4 font-sans">
-      <h2 className="text-3xl md:text-4xl font-extrabold text-center text-gray-900 mb-12">
-        Depoimentos de nossos clientes
-      </h2>
-
-      <div className="max-w-6xl mx-auto overflow-x-auto">
-        <div
-          className="flex transition-transform duration-500 ease-in-out min-w-[100%]"
-          style={{ transform: `translateX(-${current * (100 / visible)}%)`, width: `${(testimonials.length / visible) * 100}%` }}
-        >
-          {testimonials.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white border border-gray-200 rounded-xl shadow-md p-6 w-full max-w-[320px] sm:w-[300px] flex-shrink-0 mx-auto sm:mx-2"
-            >
-              <div className="relative">
-                <div className="absolute -top-6 -left-3">
-                  <div className="bg-indigo-500 w-8 h-8 rounded-md flex items-center justify-center">
-                    <span className="text-white text-xl font-bold"><FaQuoteRight/></span>
-                  </div>
-                </div>
-                <p className="text-gray-700 text-sm pt-4 leading-relaxed">{item.text}</p>
-              </div>
-              <div className="mt-4 flex items-center gap-3">
-                <Image
-                  src="/46-avatar.svg"
-                  alt="Avatar"
-                  width={48}
-                  height={48}
-                  className="rounded-full"
-                />
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">{item.author}</p>
-                  <p className="text-xs text-gray-500">• {item.city}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Bullets */}
-        <div className="hidden sm:flex justify-center gap-2 mt-8">
-          {testimonials.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => handleBulletClick(i)}
-              className={`w-3 h-3 rounded-full transition-colors ${i === current ? 'bg-indigo-600' : 'bg-gray-300'}`}
-              aria-label={`Ver slide ${i + 1}`}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
+    <Testimonials/>
   
     <div className="h-1 w-1/3 bg-violet-500 rounded-full" />
 

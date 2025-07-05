@@ -28,6 +28,6 @@ module.exports = {
       }
     },
   },
-  plugins: [require("tw-elements-react/dist/plugin.cjs")],
+  plugins: [require("tw-elements-react/dist/plugin.cjs",'@tailwindcss/line-clamp')],
   darkMode: "class"
 };
