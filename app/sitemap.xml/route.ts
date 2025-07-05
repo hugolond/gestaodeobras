@@ -11,6 +11,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     '/gestao-pagamento-construcao',
     '/orcamento-de-obra-online',
     '/comparativo-sistema-vs-planilha',
+    '/promo-google',
     '/planos',
   ];
 

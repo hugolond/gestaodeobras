@@ -53,7 +53,7 @@ export default function Testimonials() {
   }, [maxScrollIndex]); 
 
   return (
-    <section className="bg-white py-20 px-4 font-sans">
+    <section id= "depoimento" className="bg-white py-20 px-4 font-sans">
       <h2 className="text-3xl md:text-4xl font-extrabold text-center text-gray-900 mb-12">
         Depoimentos de nossos clientes
       </h2>

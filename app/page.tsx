@@ -311,7 +311,7 @@ export default function Home() {
 
       
 
-    <section className="bg-gradient-to-tr from-fuchsia-50 via-indigo-50 to-violet-100 py-20 px-4 text-center font-manrope">
+    <section id="como-funciona" className="bg-gradient-to-tr from-fuchsia-50 via-indigo-50 to-violet-100 py-20 px-4 text-center font-manrope">
       <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-12">
         Saiba como funciona
       </h2>
