@@ -40,7 +40,7 @@ export const authOptions: CustomAuthOptions = {
           },
         }),
       ],
-    cookies: {
+      cookies: {
       sessionToken: {
         name: process.env.NODE_ENV === "production"
           ? "__Secure-next-auth.session-token"
@@ -73,24 +73,56 @@ export const authOptions: CustomAuthOptions = {
           secure: process.env.NODE_ENV === "production",
         },
       },
-    },
+      },
       session: {
         strategy: "jwt",
         updateAge: 2 * 60 * 60, // 2 horas
         maxAge: 4 * 60 * 60, // 4 horas
       },
       callbacks: {
-        async jwt({ token, user }) {
-          if (user) {
-            token.id = user.id;
-            token.email = user.email;
-            token.username = user.username;
-            token.roles = user.roles as string[];
-            token.token = user.token;
-            token.exp = (user as any).exp;
-          }
-          return token;
-        },
+        async jwt({ token, user, trigger, session }) {
+            const now = Math.floor(Date.now() / 1000);
+            const exp = (token as any).exp;
+
+            // Se token estiver prestes a expirar, tenta renovar
+            if (exp && exp - now < 2 * 60 * 60) {
+              try {
+                const refreshRes = await fetch(
+                  `https://backendgestaoobra.onrender.com/refresh?token=${(token as any).token}`
+                );
+                const refreshData = await refreshRes.json();
+                if (refreshRes.ok && refreshData.token) {
+                  const decoded = JSON.parse(
+                    Buffer.from(refreshData.token.split(".")[1], "base64").toString()
+                  );
+                  token.token = refreshData.token;
+                  token.exp = decoded.exp;
+                }
+              } catch (err) {
+                console.error("Erro ao renovar token", err);
+              }
+            }
+
+            if (user) {
+              const decoded = JSON.parse(
+                Buffer.from((user as any).token.split(".")[1], "base64").toString()
+              );
+              return {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                roles: user.roles,
+                token: user.token,
+                exp: decoded.exp,
+              };
+            }
+
+            if (trigger === "update") {
+              return { ...token, ...session.user };
+            }
+
+            return token;
+          },
         async session({ session, token }) {
           session.user.id = token.id as string;
           session.user.email = token.email as string;
