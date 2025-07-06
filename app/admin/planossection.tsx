@@ -66,7 +66,7 @@ export default function PlanosSection({ onPage = false, email, indicados = [] , 
         "Ativação imediata"
       ],
       status: true,
-      priceId: "price_1RTmzaQWxc0UfbT2xJHDYuZO"
+      priceId: "price_1RhtcIHqDlGxRZfNe1wxXkpj"
     },
     {
       nome: "Profissional",
@@ -80,7 +80,7 @@ export default function PlanosSection({ onPage = false, email, indicados = [] , 
         "Ativação imediata"
       ],
       status: true,
-      priceId: "price_1RTn0jQWxc0UfbT2aLtABvEB"
+      priceId: "price_1RhteOHqDlGxRZfNJnMMt4VE"
     },
     {
       nome: "Equipe",

@@ -34,8 +34,8 @@ export default function TelaConfig({ session }: any) {
 
   const Plan = (value: any) => {
     switch (value) {
-      case "price_1RTmzaQWxc0UfbT2xJHDYuZO": return "Essencial";
-      case "price_1RTn0jQWxc0UfbT2aLtABvEB": return "Profissional";
+      case "price_1RhtcIHqDlGxRZfNe1wxXkpj": return "Essencial";
+      case "price_1RhteOHqDlGxRZfNJnMMt4VE": return "Profissional";
       case "price_1RTn1dQWxc0UfbT25f6h5W6P": return "Equipe";
       default: return "Grátis";
     }
