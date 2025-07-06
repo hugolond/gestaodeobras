@@ -100,6 +100,33 @@ export default function TelaAdmin({ session }: any) {
   const totalPrevisto = chartData.reduce((acc, cur) => acc + cur.previsto, 0);
   const alturaGrafico = chartData.length * 90;
 
+  const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const pagamento = payload.find((p: any) => p.dataKey === 'valor')?.value || 0;
+    const previsto = payload.find((p: any) => p.dataKey === 'previsto')?.value || 0;
+
+    return (
+      <div className="bg-white border border-gray-300 rounded p-2 shadow text-sm">
+        <p className="font-semibold text-gray-800">{label}</p>
+        <p className="text-[#28a9b8]">
+          Pagamento:{' '}
+          <strong>
+            {pagamento.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+          </strong>
+        </p>
+        <p className="text-orange-600">
+          Previsto:{' '}
+          <strong>
+            {previsto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+          </strong>
+        </p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
   return (
     <DefautPage session={session}>
       <section className="col-span-3 sm:col-span-10 px-2 pb-24">
@@ -140,7 +167,7 @@ export default function TelaAdmin({ session }: any) {
                       >
                         <XAxis type="number" hide />
                         <YAxis dataKey="name" type="category" width={100} />
-                        <Tooltip />
+                        <Tooltip content={<CustomTooltip />} />
                         <Bar dataKey="valor" name="Pagamento" fill="#28a9b8" />
                         <Line dataKey="previsto" name="Previsto" stroke="#ff6600" strokeWidth={2} />
                         <Legend />
