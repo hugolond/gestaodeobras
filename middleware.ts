@@ -20,5 +20,5 @@ export default async function middleware(req:NextRequest) {
   return NextResponse.next();
 }
 export const config = {
-  matcher: ["/admin/:path*", "/login", "/register"],
+  matcher: ["/admin/:path*", "/login"],
 };
