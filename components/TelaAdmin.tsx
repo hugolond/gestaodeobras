@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import DefautPage from '@/components/defautpage';
-import { Plus, CalendarDays, DollarSign, Loader } from 'lucide-react';
+import { Plus, CalendarDays, DollarSign, Loader, PanelRightCloseIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { ArrowDownIcon, ArrowUpIcon, BoxIconLine, GroupIcon } from "@/components/icons";
+import Badge from "./ui/badge/Badge";
 import Link from 'next/link';
 import {
   BarChart,
@@ -136,14 +138,14 @@ export default function TelaAdmin({ session }: any) {
             Carregando dados...
           </div>
         ) : (
-          <div className="p-4 space-y-4 max-w-xl mx-auto">
+          <div className="p-6 space-y-4 max-w-xl mx-auto bg-gray-100 rounded-2xl shadow">
             <h1 className="text-2xl font-semibold text-left">Bem-vindo(a), {username}</h1>
             <p className="text-left text-sm text-gray-500">Resumo da sua conta</p>
-
+            
             <div className="grid grid-cols-2 gap-4">
               <Card>
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <p className="sm:text-xl text-sm text-muted-foreground">Obras ativas</p>
+                <CardContent className="p-4 flex flex-col items-center justify-center text-center s">
+                  <p className="sm:text-xl text-sm text-muted-foreground ">Obras ativas</p>
                   <p className="text-3xl font-bold text-[#28a9b8]">{obrasUnicas}</p>
                 </CardContent>
               </Card>

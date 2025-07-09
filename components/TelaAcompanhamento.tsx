@@ -200,7 +200,6 @@ export default function TelaAcompanhamento({ session }: any) {
                   width: "100%",
                   maxWidth: "768px",
                   paddingBottom: "2rem",
-                  fontFamily: "'Inter', sans-serif",
                 }}
               >
                 {status && (

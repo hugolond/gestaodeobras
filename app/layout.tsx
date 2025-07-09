@@ -7,11 +7,16 @@ import type { Viewport } from 'next';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { Providers } from "./providers";
 import BodyWrapper from "../components/BodyWrapper";
-
-const roboto = Open_Sans({ weight: "400", subsets: ["latin"] });
+import { Manrope } from "next/font/google";
 
 const title = "Gestão Obra Fácil";
 const description = "Seu controle de obra no dia a dia. Gerenciador financeiro para pagamentos completo para controle de obras.";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title,
@@ -30,8 +35,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-br" suppressHydrationWarning>
-      <body className={roboto.className}>
+    <html lang="pt-br" className={manrope.variable} suppressHydrationWarning>
+      <body className="font-manrope">
         <GoogleAnalytics />
         <Toaster />
         <Providers>

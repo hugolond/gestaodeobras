@@ -5,7 +5,7 @@ import { SessionProvider, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import Logo from "../assets/marca.png";
+import Logo from "../../public/logo_hd.svg";
 import { BoxText } from "../admin/boxText";
 import { DevicePhoneMobileIcon ,HomeModernIcon ,CreditCardIcon, PresentationChartBarIcon ,AdjustmentsHorizontalIcon, ChevronDoubleLeftIcon } from '@heroicons/react/24/solid'
 import { BookMarkedIcon, SidebarClose } from "lucide-react";
@@ -21,9 +21,9 @@ export default function Sidebar({ session }: any) {
   const estiloiconClose = "size-8 text-gray-400"
 
   const sidebarBase =
-    "flex items-center p-2 space-x-3 rounded-md text-white font-semibold hover:bg-[#28a9b8] transition-colors duration-200";
+    "flex items-center p-2 space-x-3 rounded-md text-white font-semibold hover:bg-[#475569] transition-colors duration-200";
   const sidebarButton =
-    "flex w-full items-center p-3 space-x-3 rounded-md text-white font-semibold text-lg hover:bg-[#28a9b8] transition-colors duration-200";
+    "flex w-full items-center p-3 space-x-3 rounded-md text-white font-bold text-lg hover:bg-[#475569] transition-colors duration-200";
   const sidebarSpan = "flex-1 ms-3 text-left whitespace-nowrap";
 
   const sidebarButtonClose = "flex w-full items-center p-3 space-x-3 rounded-md font-semibold text-lg bg-gray-300 text-gray-600 cursor-not-allowed text-white transition-colors duration-200";
@@ -47,13 +47,13 @@ export default function Sidebar({ session }: any) {
       <aside
         className={`fixed top-0 left-0 w-72 h-screen p-2 transition-transform z-40 ${
           showSidebar ? "translate-x-0" : "-translate-x-full"
-        } bg-[#0D1B2A] shadow-xl sm:translate-x-0`}
+        } bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#0f172a]  to-[#334155] shadow-xl sm:translate-x-0`}
       >
-        <div className="px-4 sm:p-8">
-          <Image className="bg-white rounded-lg bg-white shadow-xl" priority src={Logo} alt="Logo" />
+        <div className="p-4">
+          <Image className="bg-white rounded w-full shadow-xl" priority src={Logo} alt="Logo" />
         </div>
 
-        <div className="px-3 pt-4 overflow-y-auto">
+        <div className="px-3 p-4 overflow-y-auto">
           <Link href="/admin">
             <button type="button" className={sidebarButton}>
             <DevicePhoneMobileIcon className= {estiloicon} />
