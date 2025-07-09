@@ -1,11 +1,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import CalendarioColaboradorMobile from "@/components/TelaCadastroColaborador";
+import TelaDashboard from "@/components/TelaDashboard";
 
-export default async function CollaboratorPage() {
+export default async function PaymentPage() {
   const session = await getServerSession(authOptions);
   if (!session) return redirect("/login");
 
-  return <CalendarioColaboradorMobile session={session} />;
+  return <TelaDashboard session={session} />;
 }

@@ -3,6 +3,8 @@ import { parseISO } from "date-fns";
 import copy from "copy-to-clipboard";
 import toast from "react-hot-toast";
 import React from "react";
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export const FormatDate = (date: string) => {
   return formatInTimeZone(
@@ -66,4 +68,8 @@ export async function copylinkText(texto: string) {
   } catch (err) {
     toast.error("Falha ao copiar o texto " + err);
   }
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }

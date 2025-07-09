@@ -69,6 +69,7 @@ model Account {
   users     User[]
   obras     CadastroObra[]
   pagamentos Pagamento[]
+  accessLogs  AccessLog[]
 
   @@map("account")
   @@schema("obra")
@@ -162,5 +163,19 @@ model Subscription {
   email               String?
 
   @@map("subscriptions")
+  @@schema("obra")
+}
+
+model AccessLog {
+  id         Int      @id @default(autoincrement())
+  accountId  String   @map("account_id") @db.Uuid
+  email      String
+  loginAt    DateTime @default(now()) @map("login_at")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+
+  account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("access_log")
   @@schema("obra")
 }
