@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 
-import { Button } from '@heroui/button'
-
 import { Card, CardContent } from "@/components/ui/card";
 import { format, addWeeks, subWeeks, startOfWeek, addDays, isWeekend, isSameDay, differenceInMinutes } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
@@ -128,12 +126,12 @@ export default function CalendarioColaborador({ session }: any) {
       </div>
 
       <div className="flex justify-between gap-2">
-        <Button onClick={() => setSemanaBase((prev) => subWeeks(prev, 1))} className="w-1/2">
+        <button onClick={() => setSemanaBase((prev) => subWeeks(prev, 1))} className="w-1/2">
           Anterior
-        </Button>
-        <Button onClick={() => setSemanaBase((prev) => addWeeks(prev, 1))} className="w-1/2">
+        </button>
+        <button onClick={() => setSemanaBase((prev) => addWeeks(prev, 1))} className="w-1/2">
           Próxima
-        </Button>
+        </button>
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -168,7 +166,7 @@ export default function CalendarioColaborador({ session }: any) {
               </div>
             </div>
 
-            <Button className="w-full mt-2" onClick={salvarDia}>Salvar</Button>
+            <button className="w-full mt-2" onClick={salvarDia}>Salvar</button>
           </div>
         </DialogContent>
       </Dialog>
