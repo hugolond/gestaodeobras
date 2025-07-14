@@ -12,6 +12,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     '/orcamento-de-obra-online',
     '/comparativo-sistema-vs-planilha',
     '/promo-google',
+    '/privacy-policy',
     '/planos',
   ];
 

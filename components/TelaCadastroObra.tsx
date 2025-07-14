@@ -97,10 +97,10 @@ export default function TelaCadastroObra({ session }: any) {
 
   return (
     <DefautPage session={session}>
-      <section className="col-span-3 sm:col-span-4 px-2 pb-24">
-      <h1 className="text-3xl sm:text-2xl font-bold mb-6 text-gray-800">
-          Cadastro da Obra
-        </h1>
+        <section className="col-span-3 sm:col-span-4 p-6 pb-24 bg-gray-100 rounded-2xl shadow">
+          <h1 className="text-3xl sm:text-2xl font-bold mb-6 text-gray-800">
+              Cadastro da Obra
+          </h1>
         <form ref={formRef} onSubmit={onSubmit} className="blockInput space-y-4">
           <TEInput required type="text" id="nomeObra" name="nomeObra" label="Descritivo" />
           <TEInput required type="text" id="endereco" name="endereco" label="Endereço" />
@@ -155,7 +155,7 @@ export default function TelaCadastroObra({ session }: any) {
             </button>
           </div>
         </form>
-      </section>
+        </section>
     </DefautPage>
   );
 }

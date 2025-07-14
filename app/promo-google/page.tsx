@@ -29,12 +29,11 @@ export default function PromoGooglePage() {
           </span>
           </div> 
           <div>
-          <button
-                  onClick={scrollToPlans}
-                  className="bg-[#6366F1] rounded-xl hover:bg-blue-700 text-white px-6 py-3 font-semibold"
-                >
-                  Assinar agora →
-                </button>
+                <Link href="/register">
+                    <button className="bg-[#6366F1] rounded-xl hover:bg-blue-700 text-white px-6 py-3 font-semibold">
+                      Iniciar teste →
+                    </button>
+                  </Link>
         </div>
         <div className="flex justify-center gap-2 sm:gap-4 mt-4 text-xs sm:text-sm text-gray-500 flex-wrap">
           <span>+200 usuários</span>

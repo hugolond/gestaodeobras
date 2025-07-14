@@ -56,7 +56,7 @@ export default function Footer() {
           links={[
             { label: 'Assinaturas', href: '/planos' },
             { label: 'Pagamento', href: '/pagamento' },
-            { label: 'Privacidade', href: '/privacidade' },
+            { label: 'Privacidade', href: '/privacy-policy' },
             { label: 'Dúvidas frequentes', href: '/faq' },
           ]}
         />
@@ -94,7 +94,7 @@ export default function Footer() {
           <ul className="space-y-1">
             <li><a href="/planos" className="hover:underline">Assinaturas</a></li>
             <li><a href="/pagamento" className="hover:underline">Pagamento</a></li>
-            <li><a href="/privacidade" className="hover:underline">Privacidade</a></li>
+            <li><a href="/privacy-policy" className="hover:underline">Privacidade</a></li>
             <li><a href="/faq" className="hover:underline">Dúvidas frequentes</a></li>
           </ul>
         </div>
