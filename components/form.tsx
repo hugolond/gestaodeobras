@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export default function Form({ type }: { type: "login" | "register" }) {
   const [loading, setLoading] = useState(false);
-  const [termoAceito, setTermoAceito] = useState(false);
+  const [termoAceito, setTermoAceito] = useState(true);
   const router = useRouter();
 
   return (
