@@ -18,12 +18,17 @@ export default function Sidebar({ session }: any) {
 
   const estiloicon = "size-8 text-gray-200"
 
+  const estiloiconAdmin = "size-8 text-orange-200"
+
   const estiloiconClose = "size-8 text-gray-400"
 
   const sidebarBase =
     "flex items-center p-2 space-x-3 rounded-md text-white font-semibold hover:bg-[#475569] transition-colors duration-200";
   const sidebarButton =
     "flex w-full items-center p-3 space-x-3 rounded-md text-white font-bold text-lg hover:bg-[#475569] transition-colors duration-200";
+
+  const sidebarButtonAdmin =
+    "flex w-full items-center p-3 space-x-3 rounded-md text-orange-200 font-bold text-lg hover:bg-[#475569] transition-colors duration-200";
   const sidebarSpan = "flex-1 ms-3 text-left whitespace-nowrap";
 
   const sidebarButtonClose = "flex w-full items-center p-3 space-x-3 rounded-md font-semibold text-lg bg-gray-300 text-gray-600 cursor-not-allowed text-white transition-colors duration-200";
@@ -49,11 +54,11 @@ export default function Sidebar({ session }: any) {
           showSidebar ? "translate-x-0" : "-translate-x-full"
         } bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#0f172a]  to-[#334155] shadow-xl sm:translate-x-0`}
       >
-        <div className="p-4">
-          <Image className="bg-white rounded w-full shadow-xl" priority src={Logo} alt="Logo" />
+        <div className="pt-2">
+          <Image className="p-2 bg-white rounded-t-xl w-full shadow-xl" priority src={Logo} alt="Logo" />
         </div>
 
-        <div className="px-3 p-4 overflow-y-auto">
+        <div className="px-3 overflow-y-auto">
           <Link href="/admin">
             <button type="button" className={sidebarButton}>
             <DevicePhoneMobileIcon className= {estiloicon} />
@@ -155,14 +160,22 @@ export default function Sidebar({ session }: any) {
               <span className={sidebarSpan}>Configurações</span>
             </button>
           </Link>
+          
+          {session?.user?.roles?.includes("admin") && (
+            <Link href="/admin/dashboard">
+              <button type="button" className={sidebarButtonAdmin}>
+                <AdjustmentsHorizontalIcon className={estiloiconAdmin} />
+                <span className={sidebarSpan}>Admin</span>
+              </button>
+            </Link>
+          )}
 
           <button type="button" className={sidebarButton} onClick={() => signOut()}>
           <ChevronDoubleLeftIcon className= {estiloicon} />
             <span className={sidebarSpan}>Logout</span>
           </button>
         </div>
-
-        <footer className="bg-[#0D1B2A] rounded-b-xl">
+        <footer className="bg-white rounded-b-xl">
           <AuthDados session={session}/>
         </footer>
       </aside>
