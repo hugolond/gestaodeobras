@@ -76,8 +76,8 @@ export const authOptions: CustomAuthOptions = {
       },
       session: {
         strategy: "jwt",
-        updateAge: 2 * 60 * 60, // 2 horas
-        maxAge: 4 * 60 * 60, // 4 horas
+        updateAge: 60, // 2 horas
+        maxAge: 60 * 60, // 4 horas
       },
       callbacks: {
         async jwt({ token, user, trigger, session }) {
@@ -85,7 +85,7 @@ export const authOptions: CustomAuthOptions = {
             const exp = (token as any).exp;
 
             // Se token estiver prestes a expirar, tenta renovar
-            if (exp && exp - now < 2 * 60 * 60) {
+            if (exp && exp - now < 60) {
               try {
                 const refreshRes = await fetch(
                   `https://backendgestaoobra.onrender.com/refresh?token=${(token as any).token}`
