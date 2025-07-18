@@ -46,8 +46,11 @@ export default function TelaCadastroObra({ session }: any) {
 
       const valorInput = String(formData.get("previsto")).replace("R$", "").replace(/\./g, "").replace(",", ".");
       const valor = parseFloat(valorInput);
+
       if (isNaN(valor)) {
+        
         toast.error("Valor inválido.");
+
         setIsLoading(false);
         return;
       }
@@ -93,7 +96,7 @@ export default function TelaCadastroObra({ session }: any) {
   return (
     <DefautPage session={session}>
       <section className="col-span-3 sm:col-span-10 px-2 pb-24 w-full max-w-2xl mx-auto p-4 sm:p-6 pb-24 bg-gray-100 rounded-2xl shadow">
-        <h1 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800 text-center flex items-center justify-center gap-2">
+        <h1 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800 text-left flex items-center justify-left gap-2">
           <Building className="w-5 h-5 text-[#28a9b8]" /> Cadastro da Obra
         </h1>
         <form ref={formRef} onSubmit={onSubmit} className="space-y-6 px-2">
@@ -138,6 +141,7 @@ export default function TelaCadastroObra({ session }: any) {
               <span className="text-gray-500">Valor previsto (R$)</span>
               <div className="relative">
               <TEInput
+                name="previsto"
                 type="number"
                 prefix="R$ "
                 placeholder="Ex: R$ 150.000,00"
@@ -186,7 +190,7 @@ export default function TelaCadastroObra({ session }: any) {
             </label>
             <label>
               <span className="block font-medium text-gray-500">Data Previsão Término</span>
-              <TEInput required type="date" id="datafinalobra" name="datafinalobra" className="bg-white" />
+              <TEInput required type="date" id="datafinalobra" name="datafinalobra" className="bg-white " />
             </label>
           </div>
 
