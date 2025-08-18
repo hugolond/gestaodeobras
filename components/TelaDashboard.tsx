@@ -254,8 +254,8 @@ export default function TelaDashboardAdmin({ session }: any) {
                   >
                     <option value="todos">Todos os planos</option>
                     <option value="free">Grátis</option>
-                    <option value="prod_SOaB82dpdOrIqM">Essencial</option>
-                    <option value="prod_Sd9wZSP4KMB0fx">Profissional</option>
+                    <option value="prod_Sd9wZSP4KMB0fx">Essencial</option>
+                    <option value="prod_Sd9yGLZA8nbuCK">Profissional</option>
                   </select>
                 </div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {usuarios
