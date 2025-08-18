@@ -45,8 +45,8 @@ const formatarData = (dataStr?: string) => {
 
 const planosMap: {
   [key: string]: { nome: string; cor: string }} = {
-  "prod_SOaB82dpdOrIqM": { nome: "Essencial", cor: "bg-blue-100 text-blue-700" },
-  "prod_Sd9wZSP4KMB0fx": { nome: "Profissional", cor: "bg-green-100 text-green-700" },
+  "prod_Sd9wZSP4KMB0fx": { nome: "Essencial", cor: "bg-blue-100 text-blue-700" },
+  "prod_Sd9yGLZA8nbuCK": { nome: "Profissional", cor: "bg-green-100 text-green-700" },
   "free": { nome: "Grátis", cor: "bg-yellow-100 text-yellow-800" }
 }
 
