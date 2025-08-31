@@ -147,6 +147,7 @@ export default function TelaCadastroObra({ session }: any) {
                 placeholder="Ex: R$ 150.000,00"
                 className="pl-10 bg-white"
                 required />
+                
               <DollarSignIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"/>
               </div>
             </div>

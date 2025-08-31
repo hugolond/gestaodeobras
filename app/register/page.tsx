@@ -8,7 +8,7 @@ export default function Login() {
       {/* Topo com logo */}
     <header className="w-full px-8 py-6">
         <Link href="/">
-          <Image src="/logo_hd.svg" alt="Logo Obra Fácil" width={360} height={140} />
+          <Image src="/logo_hd2.svg" alt="Logo Obra Fácil" width={360} height={140} />
         </Link>
     </header>
     <section className="min-h-screen flex items-center justify-center bg-white px-4">

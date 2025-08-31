@@ -7,8 +7,6 @@ import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
-import { FaCheckCircle, FaMobileAlt, FaChartLine, FaShareAlt, FaArrowLeft, FaArrowRight, FaBook, FaPlane, FaBullhorn, FaPaypal, FaCreditCard, FaFolder, FaQuoteRight } from 'react-icons/fa';
 import PlanosSection from './admin/planossection';
 import Image from "next/image";
 import Footer from '@/components/footer';
@@ -180,7 +178,7 @@ export default function Home() {
       <div className="relative max-w-7xl mx-auto px-4 py-3 flex items-center justify-center sm:justify-between">
         {/* Logo centralizada no mobile, alinhada à esquerda no desktop */}
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo_hd.svg" alt="Logo" width={120} height={26} />
+          <Image src="/logo_hd2.svg" alt="Logo" width={120} height={26} />
         </Link>
 
         {/* Botão "Entrar" visível à direita no mobile com position absolute */}

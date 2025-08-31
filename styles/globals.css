@@ -12,6 +12,7 @@
 @layer base {
   html {
     @apply text-neutral-800;
+    -webkit-text-size-adjust: 100%;
   }
   html.dark {
     @apply text-neutral-50;
@@ -388,7 +389,10 @@ vertical-align: middle;
   display: block; 
   grid-column-end: 11; 
  }
-
+ 
+.card-title {
+  overflow-wrap: anywhere; /* fallback amplo para iOS */
+}
  
 
 }

@@ -5,7 +5,7 @@ import { SessionProvider, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import Logo from "../../public/logo_hd.svg";
+import Logo from "../../public/logo_hd2.svg";
 import { BoxText } from "../admin/boxText";
 import { DevicePhoneMobileIcon ,HomeModernIcon ,CreditCardIcon, PresentationChartBarIcon ,AdjustmentsHorizontalIcon, ChevronDoubleLeftIcon } from '@heroicons/react/24/solid'
 import { BookMarkedIcon, SidebarClose } from "lucide-react";
