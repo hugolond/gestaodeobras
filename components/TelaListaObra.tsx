@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import DefautPage from "@/components/defautpage";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { Loader, Plus, X, Building2Icon, DollarSignIcon} from "lucide-react";
+import { Loader, Plus, X, Building2Icon, DollarSignIcon, SquarePenIcon, CheckIcon, Trash2, CirclePlusIcon, BanknoteXIcon, BanknoteArrowDownIcon, BanknoteArrowUpIcon } from "lucide-react";
 import { NumericFormat } from "react-number-format";
 import {
   CalendarIcon,
@@ -20,10 +20,6 @@ import {
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/solid";
 
-// ===== Config / helpers =====
-const API_SALE_ENDPOINT =
-  "https://backendgestaoobra.onrender.com/api/sold/v1/create"; // ajuste se necessário
-
 const estiloicon = "size-6 text-gray-500";
 
 const tiposObraMap: Record<number, { text: string; icon: JSX.Element }> = {
@@ -33,8 +29,13 @@ const tiposObraMap: Record<number, { text: string; icon: JSX.Element }> = {
 };
 
 const onlyDigits = (s: string) => (s || "").replace(/\D+/g, "");
-const formatCurrencyBRL = (v: number) =>
-  (v ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const formatCurrencyBRL = (v: number | null | undefined | string) => {
+  const n =
+    typeof v === "string"
+      ? Number(v.replace(/\./g, "").replace(",", "."))
+      : Number(v ?? 0);
+  return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+};
 
 const formatForma = (f?: Venda["FormaPagamento"]) =>
   ({ avista: "À vista", financiamento: "Financiamento", consorcio: "Consórcio", outro: "Outro" }[f || "outro"]);
@@ -46,15 +47,14 @@ const calcularDiasTotais = (inicio?: string, fim?: string): number => {
   d0.setHours(0, 0, 0, 0);
   d1.setHours(0, 0, 0, 0);
   const diff = (d1.getTime() - d0.getTime()) / (1000 * 60 * 60 * 24);
-  return Math.max(0, Math.ceil(diff)); // se quiser inclusivo, use Math.ceil(diff) + 1
+  return Math.max(0, Math.ceil(diff));
 };
 
-// ===== Tipos =====
 type Venda = {
   ID?: string;
-  DataVenda: string; // ISO (ou YYYY-MM-DD na UI do form)
-  ValorVenda: number;
-  CPFComprador: string; // dígitos
+  DataVenda: string;
+  ValorVenda: number | null;
+  CPFComprador: string;
   FormaPagamento: "avista" | "financiamento" | "consorcio" | "outro";
   Descricao?: string;
   NomeComprador: string;
@@ -70,10 +70,16 @@ type Lote = {
   Casagerminada: boolean;
   Status: boolean; // true=andamento, false=concluída
   Previsto?: number;
-  DataInicioObra?: string; // ISO
-  DataFinalObra?: string; // ISO
+  DataInicioObra?: string;
+  DataFinalObra?: string;
   Vendida?: boolean;
   VendaInfo?: Venda;
+};
+
+const soldUrls = {
+  create: "https://backendgestaoobra.onrender.com/api/sold/v1/create",
+  update: "https://backendgestaoobra.onrender.com/api/sold/v1/update",
+  delete: "https://backendgestaoobra.onrender.com/api/sold/v1/",
 };
 
 export default function TelaListaObra({ session }: any) {
@@ -88,7 +94,7 @@ export default function TelaListaObra({ session }: any) {
   const [modalConfirmar, setModalConfirmar] = useState(false);
   const [obraSelecionada, setObraSelecionada] = useState<Lote | null>(null);
 
-  // Editar
+  // Editar Obra
   const [abrirEditar, setAbrirEditar] = useState(false);
   const [editando, setEditando] = useState<Lote | null>(null);
   const [menuAbertoId, setMenuAbertoId] = useState<string | null>(null);
@@ -102,12 +108,20 @@ export default function TelaListaObra({ session }: any) {
   const [savingVenda, setSavingVenda] = useState(false);
   const [venda, setVenda] = useState<Venda>({
     DataVenda: "",
-    ValorVenda: 0,
+    ValorVenda: null,
     CPFComprador: "",
     FormaPagamento: "avista",
     Descricao: "",
     NomeComprador: "",
   });
+
+  // Venda — modo edição/remover
+  const [editandoVenda, setEditandoVenda] = useState(false);
+  const [vendaId, setVendaId] = useState<string | undefined>(undefined);
+  const [confirmRemoverVenda, setConfirmRemoverVenda] = useState<null | { obraId: string; vendaId?: string }>(null);
+
+  // UX dica: foco automático em Valor da venda
+  const valorVendaRef = useRef<HTMLInputElement | null>(null);
 
   const router = useRouter();
 
@@ -117,6 +131,9 @@ export default function TelaListaObra({ session }: any) {
     () => lotes.slice((paginaAtual - 1) * itensPorPagina, paginaAtual * itensPorPagina),
     [lotes, paginaAtual]
   );
+
+  // Alias para usar seu bloco de estado vazio literalmente
+  const obrasDetalhadas = lotes;
 
   const formatarData = (iso?: string) => {
     if (!iso) return "-";
@@ -151,7 +168,6 @@ export default function TelaListaObra({ session }: any) {
 
         if (data === null) {
           setLotes([]);
-          setErro("Por favor, cadastre uma nova obra para listar.");
         } else if (!Array.isArray(data)) {
           throw new Error("Formato inesperado da resposta.");
         } else {
@@ -200,7 +216,7 @@ export default function TelaListaObra({ session }: any) {
     }
   };
 
-  // ===== Editar =====
+  // ===== Editar Obra =====
   const abrirModalEditar = (lote: Lote, e?: React.MouseEvent) => {
     e?.stopPropagation();
     setMenuAbertoId(null);
@@ -262,7 +278,7 @@ export default function TelaListaObra({ session }: any) {
         Nome: String(editando.Nome ?? "").trim(),
         Endereco: String(editando.Endereco ?? ""),
         Bairro: String(editando.Bairro ?? ""),
-        Area: String(editando.Area ?? ""), // backend espera string
+        Area: String(editando.Area ?? ""),
         Tipo: parseInt(String(editando.Tipo || 1), 10),
         Previsto: Number(editando.Previsto ?? 0),
         Casagerminada: Boolean(editando.Casagerminada),
@@ -298,6 +314,47 @@ export default function TelaListaObra({ session }: any) {
   const abrirModalVenda = (lote: Lote) => {
     setMenuAbertoId(null);
     setVendendoDe(lote);
+    const hoje = new Date().toISOString().split("T")[0];
+    setVenda({
+      DataVenda: hoje,
+      ValorVenda: null,
+      CPFComprador: "",
+      FormaPagamento: "avista",
+      Descricao: "",
+      NomeComprador: "",
+    });
+    setVendaId(undefined);
+    setEditandoVenda(false);
+    setAbrirVenda(true);
+    // Dica UX: foca no valor
+    setTimeout(() => valorVendaRef.current?.focus(), 0);
+  };
+
+  const abrirModalEditarVenda = (lote: Lote) => {
+    setMenuAbertoId(null);
+    setVendendoDe(lote);
+    const v = lote.VendaInfo!;
+    setVenda({
+      ID: v.ID,
+      DataVenda: v.DataVenda ? new Date(v.DataVenda).toISOString().slice(0, 10) : "",
+      ValorVenda: Number(v.ValorVenda || 0),
+      CPFComprador: onlyDigits(v.CPFComprador || ""),
+      FormaPagamento: v.FormaPagamento || "avista",
+      Descricao: v.Descricao || "",
+      NomeComprador: v.NomeComprador || "",
+    });
+    setVendaId(v.ID);
+    setEditandoVenda(true);
+    setAbrirVenda(true);
+    // Dica UX: foca no valor
+    setTimeout(() => valorVendaRef.current?.focus(), 0);
+  };
+
+  const fecharModalVenda = () => {
+    setAbrirVenda(false);
+    setVendendoDe(null);
+    setEditandoVenda(false);
+    setVendaId(undefined);
     setVenda({
       DataVenda: "",
       ValorVenda: 0,
@@ -306,12 +363,8 @@ export default function TelaListaObra({ session }: any) {
       Descricao: "",
       NomeComprador: "",
     });
-    setAbrirVenda(true);
   };
-  const fecharModalVenda = () => {
-    setAbrirVenda(false);
-    setVendendoDe(null);
-  };
+
   const salvarVenda = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!vendendoDe) return;
@@ -326,10 +379,10 @@ export default function TelaListaObra({ session }: any) {
       const session = await getSession();
       const token = (session as any)?.token || (session?.user as any)?.token;
 
-      const payload = {
+      const payloadBase = {
         ObraID: vendendoDe.ID,
         DataVenda: new Date(venda.DataVenda + "T00:00:00Z").toISOString(),
-        ValorVenda: venda.ValorVenda,
+        ValorVenda: Number(venda.ValorVenda),
         CPFComprador: cpfDigits,
         FormaPagamento: venda.FormaPagamento,
         Descricao: venda.Descricao ?? "",
@@ -337,18 +390,30 @@ export default function TelaListaObra({ session }: any) {
       };
 
       setSavingVenda(true);
-      const res = await fetch(API_SALE_ENDPOINT, {
-        method: "POST",
+
+      const url = editandoVenda ? soldUrls.update : soldUrls.create;
+      const method = editandoVenda ? "PUT" : "POST";
+      if (editandoVenda && !vendaId) {
+        toast.error("ID da venda não encontrado para editar.");
+        return;
+      }
+      const payload = editandoVenda ? { ID: vendaId, ...payloadBase } : payloadBase;
+
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
+
       setSavingVenda(false);
 
       if (!res.ok) {
         const msg = await res.text().catch(() => "");
-        throw new Error(msg || "Falha ao registrar a venda.");
+        throw new Error(msg || (editandoVenda ? "Falha ao atualizar a venda." : "Falha ao registrar a venda."));
       }
 
+      // Atualiza o lote na lista
       setLotes((prev) =>
         prev.map((o) =>
           o.ID === vendendoDe.ID
@@ -356,23 +421,69 @@ export default function TelaListaObra({ session }: any) {
                 ...o,
                 Vendida: true,
                 VendaInfo: {
-                  DataVenda: payload.DataVenda,
-                  ValorVenda: payload.ValorVenda,
-                  CPFComprador: payload.CPFComprador,
-                  FormaPagamento: payload.FormaPagamento as Venda["FormaPagamento"],
-                  Descricao: payload.Descricao,
-                  NomeComprador: payload.NomeComprador,
+                  ID: editandoVenda ? vendaId : (o.VendaInfo?.ID || vendaId),
+
+                  obraId: payloadBase.ObraID,
+                  DataVenda: payloadBase.DataVenda,
+                  ValorVenda: payloadBase.ValorVenda,
+                  CPFComprador: payloadBase.CPFComprador,
+                  FormaPagamento: payloadBase.FormaPagamento as Venda["FormaPagamento"],
+                  Descricao: payloadBase.Descricao,
+                  NomeComprador: payloadBase.NomeComprador,
                 },
               }
             : o
         )
       );
 
-      toast.success("Venda registrada com sucesso!");
+      toast.success(editandoVenda ? "Venda atualizada com sucesso!" : "Venda registrada com sucesso!");
       fecharModalVenda();
     } catch (err: any) {
       console.error(err);
-      toast.error("Erro ao registrar a venda.");
+      toast.error(editandoVenda ? "Erro ao atualizar a venda." : "Erro ao registrar a venda.");
+    }
+  };
+
+  // ===== Remover Venda =====
+  const solicitarRemocaoVenda = (lote: Lote) => {
+    setMenuAbertoId(null);
+    setConfirmRemoverVenda({ obraId: lote.ID, vendaId: lote.VendaInfo?.ID });
+  };
+
+  const removerVenda = async () => {
+    if (!confirmRemoverVenda?.vendaId) {
+      // fallback: se não tiver id da venda, apenas limpa frontend (evita travar UX)
+      setLotes((prev) =>
+        prev.map((o) => (o.ID === confirmRemoverVenda?.obraId ? { ...o, Vendida: false, VendaInfo: undefined } : o))
+      );
+      setConfirmRemoverVenda(null);
+      toast.success("Venda removida com sucesso!.");
+      return;
+    }
+
+    try {
+      const session = await getSession();
+      const token = (session as any)?.token || (session?.user as any)?.token;
+
+      const res = await fetch(soldUrls.delete + confirmRemoverVenda.vendaId , {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        const msg = await res.text().catch(() => "");
+        throw new Error(msg || "Falha ao remover a venda.");
+      }
+
+      setLotes((prev) =>
+        prev.map((o) => (o.ID === confirmRemoverVenda.obraId ? { ...o, Vendida: false, VendaInfo: undefined } : o))
+      );
+      toast.success("Venda removida com sucesso!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao remover a venda.");
+    } finally {
+      setConfirmRemoverVenda(null);
     }
   };
 
@@ -397,11 +508,18 @@ export default function TelaListaObra({ session }: any) {
 
         {erro && <p className="text-center text-red-600 bg-red-100 px-4 py-2 rounded mt-4">{erro}</p>}
 
-        {!carregando && !erro && lotes.length === 0 && (
-          <p className="text-center text-gray-500 mt-10">Nenhuma obra cadastrada.</p>
+        {!carregando && !erro && obrasDetalhadas.length === 0 && (
+          <div className="flex flex-col items-center justify-center text-center py-20 px-4 bg-white rounded-xl shadow-md">
+            <CirclePlusIcon className="w-12 h-12 text-cyan-500 mb-4"/>
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">Nenhuma obra cadastrada</h2>
+            <p className="text-sm text-gray-500 mb-4">
+              Para começar, clique no botão <span className="font-medium text-cyan-600">"+ Nova Obra"</span> no canto
+              inferior direito.
+            </p>
+          </div>
         )}
 
-        {!carregando && !erro && lotes.length > 0 && (
+        {!carregando && !erro && obrasDetalhadas.length > 0 && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
               {lotesPaginados.map((lote) => {
@@ -422,21 +540,26 @@ export default function TelaListaObra({ session }: any) {
                       className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-100"
                       aria-label="Mais ações"
                     >
-                      <EllipsisVerticalIcon className="w-6 h-6 text-gray-500" />
+                      <EllipsisVerticalIcon className="w-8 h-8 px-1 text-gray-500 shadow-xl border border-gray-200 rounded-2xl" />
                     </button>
 
                     {menuAbertoId === lote.ID && (
                       <div
                         onClick={(e) => e.stopPropagation()}
-                        className="absolute top-12 right-3 bg-white border shadow-lg rounded-xl z-10 w-48 overflow-hidden"
+                        className="absolute top-12 right-3 bg-white border shadow-lg rounded-xl z-10 w-56 overflow-hidden"
                       >
+                        {/* Editar Obra */}
                         <button
                           className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
                           onClick={(e) => abrirModalEditar(lote, e)}
                         >
-                          Editar
+                          <div className="flex items-center gap-2">
+                            <SquarePenIcon className="w-5 h-5 text-gray-500" />
+                            Editar obra
+                          </div>
                         </button>
 
+                        {/* Marcar concluída */}
                         {lote.Status && (
                           <button
                             className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
@@ -447,11 +570,15 @@ export default function TelaListaObra({ session }: any) {
                               setMenuAbertoId(null);
                             }}
                           >
-                            Marcar concluída
+                            <div className="flex items-center gap-2">
+                              <CheckIcon className="w-5 h-5 text-green-500" />
+                              Marcar concluída
+                            </div>
                           </button>
                         )}
 
-                        {!lote.Status && !lote.Vendida && (
+                        {/* Registrar venda (somente se NÃO vendida) */}
+                        {!lote.Vendida && !lote.Status && (
                           <button
                             className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
                             onClick={(e) => {
@@ -459,18 +586,54 @@ export default function TelaListaObra({ session }: any) {
                               abrirModalVenda(lote);
                             }}
                           >
-                            Registrar venda
+                            <div className="flex items-center gap-2">
+                              <BanknoteArrowUpIcon className="w-5 h-5 text-green-600" />
+                              Registrar venda
+                            </div>
                           </button>
+                        )}
+
+                        {/* Editar venda / Remover venda (se vendida) */}
+                        {lote.Vendida && lote.VendaInfo && (
+                          <>
+                            <button
+                              className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                abrirModalEditarVenda(lote);
+                              }}
+                            >
+                              <div className="flex items-center gap-2">
+                                <BanknoteArrowDownIcon className="w-5 h-5 text-gray-500" />
+                                Editar venda
+                              </div>
+                            </button>
+                            <button
+                              className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm text-red-600"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                solicitarRemocaoVenda(lote);
+                              }}
+                            >
+                              <div className="flex items-center gap-2">
+                                <BanknoteXIcon className="w-5 h-5" />
+                                Remover venda
+                              </div>
+                            </button>
+                          </>
                         )}
                       </div>
                     )}
 
                     {/* Cabeçalho e infos */}
                     <div className="space-y-1">
-                      <h2 className="card-title
-                        text-2xl font-extrabold text-gray-700 leading-tight lg:text-xl
-                        line-clamp-2 break-words min-w-0">{lote.Nome}</h2>
-                        <div className="space-y-1 lg:space-y-2 min-w-0"></div>
+                      <h2
+                        className="card-title text-2xl font-extrabold text-gray-700 leading-tight lg:text-xl
+                        line-clamp-2 break-words min-w-0"
+                      >
+                        {lote.Nome}
+                      </h2>
+                      <div className="space-y-1 lg:space-y-2 min-w-0"></div>
                       <p className="text-sm text-gray-700">
                         <strong>Endereço:</strong> {lote.Endereco}
                       </p>
@@ -676,7 +839,7 @@ export default function TelaListaObra({ session }: any) {
           </div>
         )}
 
-        {/* Modal EDITAR */}
+        {/* Modal EDITAR OBRA */}
         {abrirEditar && editando && (
           <div
             className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
@@ -694,13 +857,9 @@ export default function TelaListaObra({ session }: any) {
                 setSaving(false);
               }}
               onClick={(e) => e.stopPropagation()}
-              className="relative bg-white 
-                         rounded-2xl sm:rounded-3xl 
-                         shadow-2xl sm:shadow-xl 
-                         w-full max-w-lg 
-                         animate-in fade-in slide-in-from-bottom-4 sm:slide-in-from-top-8 sm:scale-95
-                         max-h-[85vh] overflow-y-auto 
-                         mx-3 sm:mx-0"
+              className="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl sm:shadow-xl
+                         w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 sm:slide-in-from-top-8 sm:scale-95
+                         max-h-[85vh] overflow-y-auto mx-3 sm:mx-0"
             >
               {/* Header */}
               <div className="sticky top-0 z-10 px-5 sm:px-6 py-3 bg-white/95 backdrop-blur flex items-center justify-between border-b">
@@ -870,7 +1029,7 @@ export default function TelaListaObra({ session }: any) {
           </div>
         )}
 
-        {/* Modal REGISTRAR VENDA — header com resumo + financeiro + form */}
+        {/* Modal REGISTRAR/EDITAR VENDA */}
         {abrirVenda && vendendoDe && (
           <div
             className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
@@ -886,11 +1045,12 @@ export default function TelaListaObra({ session }: any) {
               {/* HEADER */}
               <div className="sticky top-0 z-10 px-5 sm:px-6 py-3 bg-white/95 backdrop-blur border-b">
                 <div className="flex items-center justify-between">
-                  {/* Ícone à esquerda + textos à direita */}
                   <div className="flex items-center gap-3 min-w-0">
                     <DollarSignIcon className="w-7 h-7 text-emerald-600 shrink-0" />
                     <div className="min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-800 truncate">Registrar venda</h3>
+                      <h3 className="text-lg font-semibold text-gray-800 truncate">
+                        {editandoVenda ? "Editar venda" : "Registrar venda"}
+                      </h3>
                       <p className="text-xs text-gray-500 truncate">
                         Obra: <span className="font-medium text-gray-700">{vendendoDe.Nome}</span>
                       </p>
@@ -907,7 +1067,6 @@ export default function TelaListaObra({ session }: any) {
                   </button>
                 </div>
               </div>
-
 
               {/* HEADER SUMMARY */}
               <div className="px-5 sm:px-6 pt-4">
@@ -928,7 +1087,7 @@ export default function TelaListaObra({ session }: any) {
                             <>Prazo em andamento</>
                           ) : (
                             <>
-                              Concluída em {" "}
+                              Concluída em{" "}
                               <span className="font-semibold">
                                 {calcularDiasTotais(vendendoDe.DataInicioObra, vendendoDe.DataFinalObra)} dia(s)
                               </span>
@@ -975,7 +1134,7 @@ export default function TelaListaObra({ session }: any) {
                         </div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Venda (preencher)</div>
+                        <div className="text-gray-500">{editandoVenda ? "Venda (atual)" : "Venda (preencher)"}</div>
                         <div className="font-semibold">{formatCurrencyBRL(Number(venda.ValorVenda || 0))}</div>
                       </div>
                       <div className="col-span-2 border-t pt-2 text-xs text-gray-500">
@@ -1002,7 +1161,10 @@ export default function TelaListaObra({ session }: any) {
                 <div>
                   <label className="block text-sm text-gray-700 mb-1">Valor da venda</label>
                   <NumericFormat
-                    value={Number(venda.ValorVenda)}
+                    getInputRef={(el: HTMLInputElement | null) => {
+                      valorVendaRef.current = el;
+                    }}
+                    value={venda.ValorVenda === null ? "" : venda.ValorVenda} 
                     thousandSeparator="."
                     decimalSeparator=","
                     allowNegative={false}
@@ -1073,30 +1235,70 @@ export default function TelaListaObra({ session }: any) {
 
               {/* FOOTER */}
               <div className="sticky bottom-0 z-10 bg-white/95 backdrop-blur border-t px-5 sm:px-6 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-                <div className="flex justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={fecharModalVenda}
-                    className="px-4 py-2 rounded-xl border bg-gray-50 hover:bg-gray-100 text-gray-700"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={savingVenda}
-                    className={`px-4 py-2 rounded-xl text-white ${
-                      savingVenda ? "bg-gray-300 cursor-not-allowed" : "bg-[#28a9b8] hover:bg-[#1b778a]"
-                    }`}
-                  >
-                    {savingVenda ? "Salvando..." : "Salvar venda"}
-                  </button>
+                <div className="flex justify-between gap-3">
+                  {editandoVenda && (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmRemoverVenda({ obraId: vendendoDe.ID, vendaId })}
+                      className="px-4 py-2 rounded-xl border text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Remover venda
+                    </button>
+                  )}
+
+                  <div className="ml-auto flex gap-3">
+                    <button
+                      type="button"
+                      onClick={fecharModalVenda}
+                      className="px-4 py-2 rounded-xl border bg-gray-50 hover:bg-gray-100 text-gray-700"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={savingVenda}
+                      className={`px-4 py-2 rounded-xl text-white ${
+                        savingVenda ? "bg-gray-300 cursor-not-allowed" : "bg-[#28a9b8] hover:bg-[#1b778a]"
+                      }`}
+                    >
+                      {savingVenda ? "Salvando..." : editandoVenda ? "Salvar alterações" : "Salvar venda"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </form>
           </div>
         )}
+
+        {/* Modal CONFIRMAR REMOVER VENDA */}
+        {confirmRemoverVenda && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
+              <h3 className="text-lg font-bold text-gray-800 mb-2">Remover venda</h3>
+              <p className="text-gray-600 mb-4">
+                Confirma a remoção desta venda? Essa ação pode ser irreversível.
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => setConfirmRemoverVenda(null)}
+                  className="px-4 py-2 rounded-xl border bg-gray-50 hover:bg-gray-100 text-gray-700"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={removerVenda}
+                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Remover
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
+      {/* Botão Nova Obra */}
       {!(abrirEditar || modalConfirmar || modalAberto || abrirVenda) && (
         <Link
           href="/admin/work/detail"

@@ -119,17 +119,6 @@ export default function Sidebar({ session }: any) {
               </li>
             </ul>
           )}
-
-          <button
-            type="button"
-            className={sidebarButtonClose}
-            onClick={() => {
-            }}
-          >
-            <BookMarkedIcon className= {estiloiconClose} />
-            <span className={sidebarSpan}>Diário de Obra</span>
-          </button>
-          
           <button
             type="button"
             className={sidebarButton}

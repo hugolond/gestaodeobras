@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DefautPage from '@/components/defautpage';
-import { Plus, CalendarDays, DollarSign, Loader, Hammer, Activity, HousePlugIcon, LucideHousePlus, IdCardIcon, WalletCardsIcon, BanknoteArrowDownIcon } from 'lucide-react';
+import { Plus, CalendarDays, DollarSign, Loader, Hammer, Activity, HousePlugIcon, LucideHousePlus, IdCardIcon, WalletCardsIcon, BanknoteArrowDownIcon, CirclePlusIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 
@@ -204,12 +204,9 @@ export default function TelaAdmin({ session }: any) {
                 </Card>
               </div>
             )}
-
             {obrasDetalhadas.length == 0 &&(
                <div className="flex flex-col items-center justify-center text-center py-20 px-4 bg-white rounded-xl shadow-md">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-cyan-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
+                  <CirclePlusIcon className="w-12 h-12 text-cyan-500 mb-4"/>
                   <h2 className="text-xl font-semibold text-gray-700 mb-2">Nenhuma obra cadastrada</h2>
                   <p className="text-sm text-gray-500 mb-4">
                     Para começar, clique no botão <span className="font-medium text-cyan-600">"+ Nova Obra"</span> no canto inferior direito.
